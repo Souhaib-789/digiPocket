@@ -1,9 +1,9 @@
 import React from "react";
-import Main from "./src/main";
+import Navigation from "./src/navigations/Navigation";
 
 const App = () => {
   return(
-    <Main />
+    <Navigation />
   )
 }
 

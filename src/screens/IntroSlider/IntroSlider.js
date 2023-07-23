@@ -1,17 +1,17 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Colors} from './config/Colors';
+import {Colors} from '../../config/Colors';
 
-const Main = () => {
+const IntroSlider = () => {
   return (
   <View style={styles.container}></View>
   )};
 
-export default Main;
+export default IntroSlider;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.PRIMARY_COLOR,
+    backgroundColor: Colors.WHITE,
   },
 });
