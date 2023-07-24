@@ -31,13 +31,16 @@ export default function BottomTabs() {
           } else if (route?.name == 'Settings') {
             iconName = 'settings-outline';
           }
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={23} color={color} />;
         },
         tabBarShowLabel: false ,
-        tabBarActiveTintColor: Colors.BLACK,
-        tabBarInactiveTintColor: 'black',
-        tabBarStyle: { paddingTop: 5, backgroundColor: 'white', height: 55, borderTopWidth: 0 },
-      })}>
+        tabBarActiveTintColor: 'white',
+        tabBarActiveBackgroundColor: Colors.PRIMARY_COLOR,
+        tabBarItemStyle: {borderRadius: 50 , margin: 5},
+        tabBarInactiveTintColor: Colors.BLACK,
+        tabBarStyle: {  backgroundColor: Colors.WHITE,position: 'absolute', bottom: 25 ,left: 20 , right: 20 , elevation: 3 ,borderRadius: 50 , height: 60 , borderBlockColor: Colors.LGREY, shadowColor: Colors.LGREY  },
+      })}
+      >
 
       <Tab.Screen name="Home" component={Home}            options={hideHeader} />
       <Tab.Screen name="Analytics" component={Analytics}  options={hideHeader} />
