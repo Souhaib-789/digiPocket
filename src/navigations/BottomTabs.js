@@ -3,10 +3,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Transactions from '../screens/Transactions/Transactions';
 import Home from '../screens/Home/Home';
 import Analytics from '../screens/Analytics/Analytics';
-import MoneyBox from '../screens/MoneyBox/MoneyBox';
+import MoneyBox from '../screens/Goals/Goals';
 import Settings from '../screens/Settings/Settings';
 import { Colors } from '../config/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import Goals from '../screens/Goals/Goals';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,8 +27,8 @@ export default function BottomTabs() {
             iconName = 'bar-chart-outline';
           } else if (route?.name == 'Transactions') {
             iconName = 'list-circle-outline';
-          } else if (route?.name == 'MoneyBox') {
-            iconName = 'gift-outline';
+          } else if (route?.name == 'Goals') {
+            iconName = 'trending-up-sharp';
           } else if (route?.name == 'Settings') {
             iconName = 'settings-outline';
           }
@@ -45,7 +46,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Home" component={Home}            options={hideHeader} />
       <Tab.Screen name="Analytics" component={Analytics}  options={hideHeader} />
       <Tab.Screen name="Transactions" component={Transactions}  options={hideHeader} />
-      <Tab.Screen name="MoneyBox" component={MoneyBox}    options={hideHeader}/>
+      <Tab.Screen name="Goals" component={Goals}    options={hideHeader}/>
       <Tab.Screen name="Settings" component={Settings}    options={hideHeader}/>
 
       </Tab.Navigator>

@@ -12,9 +12,11 @@ import TextComponent from '../../components/TextComponent';
 import Alternate from '../../assets/alternate.jpg';
 import {Sizes} from '../../config/Sizes';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
+  const navigation = useNavigation();
   const renderListItem = ({item}) => {
     return (
       <View style={styles.list_item}>
@@ -27,7 +29,7 @@ const Home = () => {
             <TextComponent text={'05/03/23'} style={styles.sub_heading} />
           </View>
         </View>
-        <TextComponent text={'-$ 200'} style={styles.expense_text} />
+        <TextComponent text={'-$200'} style={styles.expense_text} />
       </View>
     );
   };
@@ -75,8 +77,8 @@ const Home = () => {
 
         <View style={[styles.flexA, {marginTop: 20}]}>
           <View style={styles.box}>
-            <AntDesign
-              name="arrowdown"
+            <MaterialCommunityIcons
+              name="arrow-bottom-left"
               color={Colors.PRIMARY_COLOR}
               size={25}
             />
@@ -86,7 +88,7 @@ const Home = () => {
             </View>
           </View>
           <View style={styles.box}>
-            <AntDesign name="arrowup" color={Colors.PRIMARY_COLOR} size={25} />
+            <MaterialCommunityIcons name="arrow-top-right" color={Colors.PRIMARY_COLOR} size={25} />
             <View>
               <TextComponent text={'Expense'} style={styles.box_span} />
               <TextComponent text={'$ 200.00'} style={styles.box_heading} />
@@ -96,8 +98,8 @@ const Home = () => {
 
         <View style={[styles.flexA, {marginTop: 30}]}>
           <TextComponent text={'Recent Transactions'} style={styles.headingx} />
-          <TouchableOpacity>
-            <TextComponent text={'All >'} style={styles.sub_heading} />
+          <TouchableOpacity onPress={()=> navigation.navigate('Transactions')}>
+            <TextComponent text={'See all '} style={styles.sub_heading} />
           </TouchableOpacity>
         </View>
 
