@@ -5,6 +5,7 @@ import Transactions from '../screens/Transactions/Transactions';
 import BottomTabs from './BottomTabs';
 import AddTransaction from '../screens/Transactions/AddTransaction';
 import AddGoal from '../screens/Goals/AddGoal';
+import EditProfile from '../screens/Settings/EditProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,8 @@ export default function AppStack() {
           <Stack.Screen name="AddTransaction" component={AddTransaction}  options={hideHeader} />
           <Stack.Screen name="AddGoal" component={AddGoal}  options={hideHeader} />
           <Stack.Screen name="Settings" component={Settings}    options={hideHeader}/>
+          <Stack.Screen name="EditProfile" component={EditProfile}  options={hideHeader} />
+
         </Stack.Navigator>
     );
   }

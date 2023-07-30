@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, ScrollView} from 'react-native';
 import {Colors} from '../../config/Colors';
 import TextComponent from '../../components/TextComponent';
 import {Sizes} from '../../config/Sizes';
@@ -18,10 +12,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import Button from '../../components/Button';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {Modal} from '../../components/Modal';
 
-const AddTransaction = () => {
+const AddTransaction = props => {
+  const routeData = props?.route?.params?.item;
+  const purpose = props?.route?.params?.purpose;
 
+  console.log('---------------', routeData);
   const navigation = useNavigation();
   const [name, setname] = useState(null);
   const [amount, setamount] = useState(null);
@@ -33,20 +31,39 @@ const AddTransaction = () => {
   const [date, setDate] = useState(new Date());
   const [openModal, setOpenModal] = useState(false);
   const [Value, setValue] = useState(false);
-  const [openDropdown, setopenDropdown] = useState(false);
+  const [openSuccesModal, setopenSuccesModal] = useState(false);
 
   const IncomeCategories = ['Salary', 'Awards', 'Profit', 'Grants', 'Refunds'];
-  const ExpenseCategories = [ 'Food','Education', 'Shopping', 'Travel', 'Bills','Sport', 'Gift', 'Fuel', 'Rent',];
+  const ExpenseCategories = [
+    'Food',
+    'Education',
+    'Shopping',
+    'Travel',
+    'Bills',
+    'Sport',
+    'Gift',
+    'Fuel',
+    'Rent',
+  ];
 
-  const onPressAddTransaction = () => {};
+  const onPressAddTransaction = () => {
+    setopenSuccesModal(true);
+  };
 
+  const onPressEditTransaction = () => {};
   return (
     <View style={styles.container}>
-      <View style={[styles.flex, { marginBottom: 40 , gap: 12}]}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-      <AntDesign  size={23} color={Colors.BLACK} name="arrowleft"/>
-      </TouchableOpacity>
-      <TextComponent text={'Add New Transaction'} style={styles.heading} />
+      <View style={[styles.flex, {marginBottom: 40, gap: 12}]}>
+        {purpose ? null : (
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <AntDesign size={23} color={Colors.BLACK} name="arrowleft" />
+          </TouchableOpacity>
+        )}
+
+        <TextComponent
+          text={purpose ? 'Edit Transaction' : 'Add New Transaction'}
+          style={styles.heading}
+        />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
@@ -71,6 +88,7 @@ const AddTransaction = () => {
 
           <Switch
             value={Value}
+            disabled={purpose ? true : false}
             onValueChange={val => {
               setValue(val), settype(val ? 'Income' : 'Expense');
             }}
@@ -179,10 +197,24 @@ const AddTransaction = () => {
         />
 
         <Button
-          title={'Add'}
-          onPress={onPressAddTransaction}
-          style={{marginTop: 80}}
+          title={purpose ? 'Save' : 'Add'}
+          onPress={purpose ? onPressEditTransaction : onPressAddTransaction}
+          style={{marginTop: 40}}
         />
+
+        {purpose ? (
+          <Button
+            title={'Cancel'}
+            onPress={() => navigation.goBack()}
+            style={{
+              marginTop: 10,
+              borderColor: Colors.PRIMARY_COLOR,
+              borderWidth: 1,
+              backgroundColor: Colors.WHITE
+            }}
+            textStyle={{color: Colors.PRIMARY_COLOR}}
+          />
+        ) : null}
       </ScrollView>
 
       <DatePicker
@@ -198,6 +230,17 @@ const AddTransaction = () => {
         onCancel={() => {
           setOpenModal(false);
         }}
+      />
+
+      <Modal
+        visible={openSuccesModal}
+        Ok={true}
+        onPressOK={() => {
+          setopenSuccesModal(false), navigation.goBack();
+        }}
+        title={'Transaction Added !'}
+        text={'Your transaction has been added successfully.'}
+        image={require('../../assets/ok.png')}
       />
     </View>
   );

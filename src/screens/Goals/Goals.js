@@ -8,6 +8,7 @@ import {Switch} from 'react-native-switch';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import * as Progress from 'react-native-progress';
 import { useNavigation } from '@react-navigation/native';
+import { ListEmptyComponent } from '../../components/ListEmptyComponent';
 
 const Goals = () => {
   const [Value, setValue] = useState(false);
@@ -78,6 +79,7 @@ const Goals = () => {
           renderItem={renderListItem}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={ListEmptyComponent}
         />
 
         {Value && (
@@ -88,6 +90,7 @@ const Goals = () => {
               renderItem={renderListItem}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
+              ListEmptyComponent={ListEmptyComponent}
             />
           </>
         )}

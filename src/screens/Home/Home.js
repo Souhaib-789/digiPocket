@@ -1,19 +1,13 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import { StyleSheet,  View,  Image, ScrollView,  TouchableOpacity, FlatList} from 'react-native';
 import {Colors} from '../../config/Colors';
 import TextComponent from '../../components/TextComponent';
 import Alternate from '../../assets/alternate.jpg';
 import {Sizes} from '../../config/Sizes';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import { ListEmptyComponent } from '../../components/ListEmptyComponent';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -22,14 +16,18 @@ const Home = () => {
       <View style={styles.list_item}>
         <View style={styles.flex}>
           <View style={styles.icon_circle}>
-            <FontAwesome6 size={18} color={Colors.BLACK} name="cart-shopping" />
+            <FontAwesome6
+              size={18}
+              color={Colors.PRIMARY_COLOR}
+              name="cart-shopping"
+            />
           </View>
           <View style={{marginLeft: 10}}>
             <TextComponent text={'Shopping'} style={styles.list_text} />
             <TextComponent text={'05/03/23'} style={styles.sub_heading} />
           </View>
         </View>
-        <TextComponent text={'-$200'} style={styles.expense_text} />
+        <TextComponent text={'+$200'} style={styles.expense_text} />
       </View>
     );
   };
@@ -37,58 +35,35 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={styles.flexA}>
-          <View>
-            <TextComponent text={'Welcome Back ,'} style={styles.sub_heading} />
-            <TextComponent text={'Sarah Doe'} style={styles.heading} />
+        <View style={styles.sub_container} >
+
+          <View style={styles.flexA}>
+            <View>
+              <TextComponent text={'Welcome Back ,'} style={[styles.sub_heading , {color: Colors.LLLLGREY}]}              />
+              <TextComponent text={'Sarah Doe'} style={styles.heading} />
+            </View>
+            <TouchableOpacity  onPress={() => navigation.navigate('EditProfile')}>
+              <Image source={Alternate} style={styles.profile_image} resizeMode="contain" />
+            </TouchableOpacity>
           </View>
 
-          <Image
-            source={Alternate}
-            style={styles.profile_image}
-            resizeMode="contain"
-          />
+          <View style={styles.main_heading}>
+            <TextComponent  text={'Total Balance'} style={[styles.box_span, {color: 'white'}]} />
+            <TextComponent text={'$ 5000.00'} style={[ styles.box_heading, {color: 'white', fontSize: 27}]} />
+          </View>
         </View>
 
-        <View
-          style={[
-            styles.box,
-            {
-              marginTop: 25,
-              backgroundColor: Colors.PRIMARY_COLOR,
-              gap: 5,
-              width: '60%',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-            },
-          ]}>
-          <TextComponent
-            text={'Total Balance'}
-            style={[styles.box_span, {color: 'white'}]}
-          />
-          <TextComponent
-            text={'$ 5000.00'}
-            style={[
-              styles.box_heading,
-              {color: 'white', marginLeft: 15, fontSize: Sizes.h1},
-            ]}
-          />
-        </View>
-
-        <View style={[styles.flexA, {marginTop: 20}]}>
+        <View style={styles.cards_view}>
           <View style={styles.box}>
-            <MaterialCommunityIcons
-              name="arrow-bottom-left"
-              color={Colors.PRIMARY_COLOR}
-              size={25}
-            />
+            <MaterialCommunityIcons name="arrow-bottom-left"  color={Colors.PRIMARY_COLOR} size={25}  />
             <View>
               <TextComponent text={'Income'} style={styles.box_span} />
               <TextComponent text={'$ 5000.00'} style={styles.box_heading} />
             </View>
           </View>
+
           <View style={styles.box}>
-            <MaterialCommunityIcons name="arrow-top-right" color={Colors.PRIMARY_COLOR} size={25} />
+            <MaterialCommunityIcons name="arrow-top-right" color={Colors.PRIMARY_COLOR} size={25}  />
             <View>
               <TextComponent text={'Expense'} style={styles.box_span} />
               <TextComponent text={'$ 200.00'} style={styles.box_heading} />
@@ -96,18 +71,21 @@ const Home = () => {
           </View>
         </View>
 
-        <View style={[styles.flexA, {marginTop: 30}]}>
-          <TextComponent text={'Recent Transactions'} style={styles.headingx} />
-          <TouchableOpacity onPress={()=> navigation.navigate('Transactions')}>
-            <TextComponent text={'See all '} style={styles.sub_heading} />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.lower_container}>
+          <View style={styles.flexA}>
+            <TextComponent text={'Recent Transactions'} style={styles.headingx} />
+            <TouchableOpacity onPress={() => navigation.navigate('Transactions')} >
+              <TextComponent text={'See all '} style={styles.sub_heading} />
+            </TouchableOpacity>
+          </View>
 
-        <FlatList
-          data={[1, 2, 3]}
-          renderItem={renderListItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
+          <FlatList
+            data={[1,2,3]}
+            renderItem={renderListItem}
+            keyExtractor={(item, index) => index.toString()}
+            ListEmptyComponent={ListEmptyComponent}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -119,13 +97,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE,
-    padding: 18,
+  },
+  sub_container: {
+    backgroundColor: Colors.PRIMARY_COLOR,
+    padding: 20,
+    paddingBottom: 80,
+  },
+  lower_container: {
+    padding: 20,
+     marginTop: 60
+    },
+  main_heading: {
+    marginTop: 40,
+    gap: 5,
   },
   profile_image: {
     width: 40,
     height: 40,
     borderRadius: 40,
   },
+  cards_view: {
+    position: 'absolute',
+   top: 200, 
+   marginHorizontal: 20, 
+     flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center'
+}, 
   flex: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -140,24 +138,20 @@ const styles = StyleSheet.create({
     height: 230,
     padding: 20,
   },
-  sub_heading: {
-    color: Colors.GREY,
-    fontSize: Sizes.h6,
-  },
   heading: {
-    color: Colors.BLACK,
-    fontSize: Sizes.h2,
+    color: Colors.WHITE,
+    fontSize: Sizes.h3,
   },
   headingx: {
     color: Colors.BLACK,
-    fontSize: Sizes.h3,
+    fontSize: Sizes.h4,
     fontWeight: 'bold',
   },
   box: {
     backgroundColor: Colors.WHITE,
     elevation: 5,
     borderRadius: 10,
-    paddingVertical: 20,
+    paddingVertical: 25,
     paddingHorizontal: 15,
     width: '48%',
     gap: 7,
@@ -171,24 +165,30 @@ const styles = StyleSheet.create({
   },
   box_heading: {
     color: Colors.BLACK,
-    fontSize: Sizes.h2,
+    fontSize: Sizes.h3,
     fontWeight: 'bold',
   },
   icon_circle: {
-    backgroundColor: Colors.LLLGREY,
-    width: 50,
-    height: 50,
-    borderRadius: 70,
+    backgroundColor: Colors.WHITE,
+    elevation: 3,
+    width: 45,
+    marginLeft: 2,
+    height: 45,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   list_text: {
     color: Colors.BLACK,
-    fontSize: Sizes.h4,
+    fontSize: Sizes.h5,
   },
   expense_text: {
-    color: Colors.GREEN,
-    fontSize: Sizes.h3,
+    color: Colors.PRIMARY_COLOR,
+    fontSize: Sizes.h4,
+  },
+  sub_heading: {
+    color: Colors.GREY,
+    fontSize: Sizes.h7,
   },
   list_item: {
     justifyContent: 'space-between',

@@ -1,11 +1,18 @@
 import React from 'react';
-import {StyleSheet, View , Text, FlatList} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import {Colors} from '../../config/Colors';
-import { Sizes } from '../../config/Sizes';
+import {Sizes} from '../../config/Sizes';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import TextComponent from '../../components/TextComponent';
+import {SwipeListView} from 'react-native-swipe-list-view';
+import {ListEmptyComponent} from '../../components/ListEmptyComponent';
+import {useNavigation} from '@react-navigation/native';
 
 const Expenses = () => {
+
+  const navigation = useNavigation()
 
   const renderListItem = ({item}) => {
     return (
@@ -24,16 +31,36 @@ const Expenses = () => {
     );
   };
 
+  const renderBackItem = ({item}) => {
+    return (
+      <View style={[styles.list_item, {justifyContent: 'flex-end'}]}>
+        <View style={[styles.flex, {gap: 15, marginRight: 5}]}>
+          <TouchableOpacity style={styles.hidden_button} onPress={()=> navigation.navigate('AddTransaction', {item: item , purpose : 'Edit'})}>
+            <Feather size={20} color={Colors.WHITE} name="edit" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.hidden_buttonx}>
+            <AntDesign size={20} color={Colors.PRIMARY_COLOR} name="delete" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
-  <View style={styles.container}>
-   <FlatList
-          data={[1, 2, 3 , 4 , 5, 6, 7, 8]}
-          renderItem={renderListItem}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-        />
-  </View>
-  )};
+    <View style={styles.container}>
+      <SwipeListView
+        style={{marginTop: 7}}
+        data={[1, 2, 3, 4, 5, 6, 7, 8]}
+        renderItem={renderListItem}
+        renderHiddenItem={renderBackItem}
+        rightOpenValue={-150}
+        disableRightSwipe={true}
+        ListEmptyComponent={ListEmptyComponent}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+};
 
 export default Expenses;
 
@@ -68,11 +95,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 15,
-  },
-  
+    marginVertical: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 5,
+    backgroundColor: Colors.WHITE,
+    height: 60
+ },
+
   flex: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  hidden_button: {
+    backgroundColor: Colors.RGBA1,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 60,
+    width: 39,
+  },
+  hidden_buttonx: {
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.PRIMARY_COLOR,
+    borderWidth: 1,
+    borderRadius: 10,
+    height: 60,
+    width: 39,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

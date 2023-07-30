@@ -11,14 +11,12 @@ import TextComponent from '../../components/TextComponent';
 import {Sizes} from '../../config/Sizes';
 import Input from '../../components/Input';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import DatePicker from 'react-native-date-picker';
-import moment from 'moment';
 import {Switch} from 'react-native-switch';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
+import { Modal } from '../../components/Modal';
 
 const AddGoal = () => {
   const navigation = useNavigation();
@@ -28,6 +26,8 @@ const AddGoal = () => {
   const [category, setcategory] = useState(null);
   const [description, setdescription] = useState(null);
   const [Value, setValue] = useState(false);
+  const [openModal, setopenModal] = useState(false);
+
 
   const GoalCategories = [
     'Vehicle',
@@ -40,7 +40,9 @@ const AddGoal = () => {
     'Mobile Phone',
   ];
 
-  const onPressAddGoal = () => {};
+  const onPressAddGoal = () => {
+    setopenModal(true)
+  };
 
   return (
     <View style={styles.container}>
@@ -148,9 +150,17 @@ const AddGoal = () => {
         <Button
           title={'Add it'}
           onPress={onPressAddGoal}
-          style={{marginTop: 200}}
+          style={{marginTop: 80}}
         />
       </ScrollView>
+
+      <Modal 
+      visible={openModal} 
+      Ok={true} 
+      onPressOK={()=> {setopenModal(false) , navigation.goBack()}}
+      title={'Goal Added !'} 
+      text={'Your goal has been added successfully.'}
+      image={require('../../assets/done.png')} />
     </View>
   );
 };
