@@ -19,13 +19,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTheme, showAlert, showLoading } from '../../redux/actions/AppAction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Logout } from '../../redux/actions/AuthActions';
+import { Fonts } from '../../config/Fonts';
 
 const Settings = () => {
   const navigation = useNavigation();
   const theme = useSelector(state => state.AppReducer.theme)
   const [Value, setValue] = useState(theme);
   const dispatch = useDispatch()
-  console.log(theme);
 
   const options = [
     {
@@ -76,7 +76,6 @@ const Settings = () => {
   };
 
  
-
   const onChangeTheme = (e) =>  {
   setValue(e);
   dispatch(setTheme(e))
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   sub_heading: {
-    fontWeight: 'bold',
+    fontFamily: Fonts.SemiBold,
     fontSize: Sizes.h4,
   },
   span: {

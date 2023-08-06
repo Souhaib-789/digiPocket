@@ -15,6 +15,7 @@ import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import {Modal} from '../../components/Modal';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../../config/Fonts';
 
 const AddTransaction = props => {
   const routeData = props?.route?.params?.item;
@@ -82,7 +83,7 @@ const AddTransaction = props => {
               text={'Expense'}
               style={{
                 color: !Value ? Colors.PRIMARY_COLOR : Colors.GREY,
-                fontWeight: !Value ? 'bold' : 'normal',
+                fontFamily: !Value ? Fonts.SemiBold : Fonts.Regular,
               }}
             />
           </View>
@@ -155,7 +156,7 @@ const AddTransaction = props => {
             setcategory(selectedItem);
           }}
           defaultButtonText="Select category"
-          buttonTextStyle={{fontSize: Sizes.h5, color:theme ? Colors.WHITE : Colors.BLACK}}
+          buttonTextStyle={{fontSize: Sizes.h5, color:theme ? Colors.WHITE : Colors.BLACK,  fontFamily: Fonts.Regular}}
           search
           renderDropdownIcon={() => (
             <MaterialIcons
@@ -173,14 +174,14 @@ const AddTransaction = props => {
             return selectedItem;
           }}
           rowTextForSelection={(item, index) => {
-            return <TextComponent text={item} style={{fontSize: Sizes.h5}} />;
+            return <TextComponent text={item} style={{fontSize: Sizes.h5 }} />;
           }}
           searchInputStyle={{
             borderBottomColor: Colors.LLGREY,
             borderBottomWidth: 1,
             backgroundColor: theme ? Colors.BLACK: Colors.WHITE,
           }}
-          selectedRowTextStyle={{color: Colors.PRIMARY_COLOR}}
+          selectedRowTextStyle={{color: Colors.PRIMARY_COLOR,  fontFamily: Fonts.Regular}}
           dropdownStyle={{
             borderRadius: 10,
             backgroundColor: theme ? Colors.BLACK : Colors.WHITE,

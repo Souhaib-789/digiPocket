@@ -3,6 +3,7 @@ import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
 import TextComponent from './TextComponent';
 import {Colors} from '../config/Colors';
 import {Sizes} from '../config/Sizes';
+import { Fonts } from '../config/Fonts';
 
 const Button = props => {
   return (
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
   button_text: {
     color: 'white',
     fontSize: Sizes.h5,
-    fontWeight: 'bold'
+    fontFamily: Fonts.SemiBold
   },
 });
 

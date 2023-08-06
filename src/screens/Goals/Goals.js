@@ -10,6 +10,7 @@ import * as Progress from 'react-native-progress';
 import { useNavigation } from '@react-navigation/native';
 import { ListEmptyComponent } from '../../components/ListEmptyComponent';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../../config/Fonts';
 
 const Goals = () => {
   const [Value, setValue] = useState(false);
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
   },
   box_heading: {
     fontSize: Sizes.h3,
-    fontWeight: 'bold',
+  fontFamily: Fonts.SemiBold
   },
   flex: {
     flexDirection: 'row',
@@ -148,11 +149,11 @@ const styles = StyleSheet.create({
   expense_text: {
     color: Colors.BLACK,
     fontSize: Sizes.h5,
-    fontWeight: 'bold',
+    fontFamily: Fonts.SemiBold
   },
   sub_heading: {
     fontSize: Sizes.h5,
-    fontWeight: 'bold',
+  fontFamily: Fonts.SemiBold,
     marginTop: 30,
     marginBottom: 5,
   },

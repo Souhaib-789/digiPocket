@@ -22,6 +22,7 @@ import {
 } from '../../redux/actions/AppAction';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { Fonts } from '../../config/Fonts';
 
 const Signup = () => {
   const navigation = useNavigation();
@@ -144,7 +145,7 @@ const Signup = () => {
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <TextComponent
                 text={' Sign in'}
-                style={[styles.link, {fontWeight: 'bold'}]}
+                style={[styles.link, {fontFamily: Fonts.SemiBold}]}
               />
             </TouchableOpacity>
           </View>
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 25,
-    fontWeight: 'bold',
+    fontFamily: Fonts.SemiBold,
     marginBottom: 15,
   },
   flex: {

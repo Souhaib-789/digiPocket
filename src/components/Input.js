@@ -3,6 +3,7 @@ import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
 import TextComponent from './TextComponent';
 import {Colors} from '../config/Colors';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../config/Fonts';
 
 const Input = props => {
   const theme = useSelector(state => state.AppReducer.theme)
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
   },
   input:{
     width: '90%',
+    fontFamily: Fonts.Regular
   }
 });
 

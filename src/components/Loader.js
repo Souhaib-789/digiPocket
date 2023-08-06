@@ -4,6 +4,7 @@ import {Colors} from '../config/Colors';
 import TextComponent from './TextComponent';
 import * as Progress from 'react-native-progress';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../config/Fonts';
 
 export const Loader = (props) => {
   const theme = useSelector(state => state.AppReducer.theme)
@@ -50,6 +51,6 @@ const styles = StyleSheet.create({
     padding: 40
   },
   text: {
-    fontWeight: 'bold'
+    fontFamily: Fonts.SemiBold
   },
 });

@@ -11,6 +11,7 @@ import {Sizes} from '../../config/Sizes';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../../config/Fonts';
 
 const IntroSlider = () => {
   const navigation = useNavigation();
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: 'white',
-    fontWeight: 'bold',
+    fontFamily: Fonts.SemiBold,
     fontSize: Sizes.h1,
   },
   text: {

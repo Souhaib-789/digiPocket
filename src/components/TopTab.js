@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Colors } from '../config/Colors';
 import { Sizes } from '../config/Sizes';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../config/Fonts';
 const TopTab = (props) => {
     const theme = useSelector(state => state.AppReducer.theme)
     return (
@@ -42,6 +43,6 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: Sizes.h5,
-        fontWeight: 'bold'
+    fontFamily: Fonts.SemiBold
     }
 });

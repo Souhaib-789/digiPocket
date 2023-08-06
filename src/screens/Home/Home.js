@@ -9,6 +9,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {useNavigation} from '@react-navigation/native';
 import { ListEmptyComponent } from '../../components/ListEmptyComponent';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../../config/Fonts';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -42,7 +43,7 @@ const Home = () => {
 
           <View style={styles.flexA}>
             <View>
-              <TextComponent text={'Welcome Back ,'} style={[styles.sub_heading , {color: Colors.LLLLGREY}]}              />
+              <TextComponent text={'Welcome Back ,'} style={[styles.sub_heading , {color: Colors.LLLLGREY , fontSize: Sizes.h7}]}              />
               <TextComponent text={'Sarah Doe'} style={styles.heading} />
             </View>
             <TouchableOpacity  onPress={() => navigation.navigate('EditProfile')}>
@@ -52,7 +53,7 @@ const Home = () => {
 
           <View style={styles.main_heading}>
             <TextComponent  text={'Total Balance'} style={[styles.box_span, {color: 'white'}]} />
-            <TextComponent text={'$ 5000.00'} style={[ styles.box_heading, {color: 'white', fontSize: 27}]} />
+            <TextComponent text={'$ 5000.00'} style={[ styles.box_heading, { color: 'white', fontSize: 27}]} />
           </View>
         </View>
 
@@ -142,12 +143,13 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: Sizes.h3,
-    color: 'white'
+    color: 'white',
+    fontFamily: Fonts.Medium
   },
   headingx: {
     color: Colors.BLACK,
     fontSize: Sizes.h4,
-    fontWeight: 'bold',
+fontFamily: Fonts.SemiBold
   },
   box: {
     backgroundColor: Colors.WHITE,
@@ -164,11 +166,12 @@ const styles = StyleSheet.create({
   box_span: {
     color: Colors.BLACK,
     fontSize: Sizes.h6,
+    fontFamily: Fonts.Regular
   },
   box_heading: {
     color: Colors.BLACK,
     fontSize: Sizes.h3,
-    fontWeight: 'bold',
+    fontFamily: Fonts.SemiBold
   },
   icon_circle: {
     backgroundColor: Colors.WHITE,
@@ -183,14 +186,17 @@ const styles = StyleSheet.create({
   list_text: {
     color: Colors.BLACK,
     fontSize: Sizes.h5,
+    fontFamily: Fonts.Regular
   },
   expense_text: {
     color: Colors.PRIMARY_COLOR,
     fontSize: Sizes.h4,
+    fontFamily: Fonts.Regular
   },
   sub_heading: {
     color: Colors.GREY,
-    fontSize: Sizes.h7,
+    fontSize: Sizes.h6,
+    fontFamily: Fonts.Regular
   },
   list_item: {
     justifyContent: 'space-between',

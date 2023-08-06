@@ -10,6 +10,7 @@ import {Colors} from '../config/Colors';
 import TextComponent from './TextComponent';
 import {Sizes} from '../config/Sizes';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../config/Fonts';
 
 export const Modal = props => {
 
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     textAlign: 'center',
+    color: 'white'
   },
   modalText: {
     marginBottom: 15,
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
   modalHeading: {
     color: Colors.BLACK,
     textAlign: 'center',
-    fontWeight: 'bold',
+  fontFamily: Fonts.SemiBold,
     fontSize: Sizes.h1,
   },
   btnview: {

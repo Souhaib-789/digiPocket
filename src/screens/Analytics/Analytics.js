@@ -9,7 +9,7 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
-
+import { Fonts } from '../../config/Fonts';
 const Analytics = () => {
 
   const theme = useSelector(state => state.AppReducer.theme)
@@ -152,7 +152,7 @@ const Analytics = () => {
           yAxisThickness={0}
           xAxisThickness={0}
           isAnimated={true}
-          yAxisTextStyle={{color: Colors.LLGREY}}
+          yAxisTextStyle={{color: Colors.LLGREY }}
           yAxisLabelTexts={['low', 'fair', 'good', 'Xlent']}
           yAxisLabelWidth={1}
         />
@@ -212,11 +212,12 @@ const styles = StyleSheet.create({
   sub_heading: {
     color: Colors.BLACK,
     fontSize: Sizes.h4,
-    fontWeight: 'bold',
     marginTop: 30,
+    fontFamily: Fonts.SemiBold
   },
   heading: {
     fontSize: Sizes.h3,
+    fontFamily: Fonts.Regular
   },
   category_item: {
     flexDirection: 'row',

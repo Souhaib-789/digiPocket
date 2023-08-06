@@ -10,6 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ImageUploader from '../../components/ImageUploader';
 import {useNavigation} from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../../config/Fonts';
 
 
 const EditProfile = () => {
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.PRIMARY_COLOR,
   },
   sub_heading: {
-    fontWeight: 'bold',
+    fontFamily: Fonts.SemiBold,
     fontSize: Sizes.h2,
     marginTop: 15,
     marginBottom: 5,

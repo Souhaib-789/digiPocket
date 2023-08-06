@@ -19,6 +19,7 @@ import { userExist } from '../../redux/actions/AuthActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hideLoading, showAlert, showLoading } from '../../redux/actions/AppAction';
 import auth from '@react-native-firebase/auth';
+import { Fonts } from '../../config/Fonts';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -94,7 +95,7 @@ const Login = () => {
               style={styles.link}
             />
             <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-              <TextComponent text={' Create Now'} style={[styles.link , {fontWeight: 'bold'}]} />
+              <TextComponent text={' Create Now'} style={[styles.link , {fontFamily: Fonts.SemiBold}]} />
             </TouchableOpacity>
           </View>
         </View>
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 27,
-    fontWeight: 'bold',
+  fontFamily: Fonts.SemiBold,
     marginBottom: 15,
   },
   flex: {

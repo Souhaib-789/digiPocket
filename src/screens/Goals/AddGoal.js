@@ -18,6 +18,7 @@ import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import { Modal } from '../../components/Modal';
 import { useSelector } from 'react-redux';
+import { Fonts } from '../../config/Fonts';
 
 const AddGoal = () => {
   const navigation = useNavigation();
@@ -79,7 +80,7 @@ const AddGoal = () => {
             setcategory(selectedItem);
           }}
           defaultButtonText="Select category"
-          buttonTextStyle={{fontSize: Sizes.h5, color: theme ? Colors.WHITE : Colors.BLACK}}
+          buttonTextStyle={{fontSize: Sizes.h5, color: theme ? Colors.WHITE : Colors.BLACK , fontFamily: Fonts.Regular}}
           search
           renderDropdownIcon={() => (
             <MaterialIcons

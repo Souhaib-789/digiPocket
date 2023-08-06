@@ -10,6 +10,7 @@ import { Snackbar } from 'react-native-paper';
 import { Colors } from '../config/Colors';
 import { hideAlert } from '../redux/actions/AppAction';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Fonts } from '../config/Fonts';
 
 
 export default function Navigation() {
@@ -62,7 +63,8 @@ export default function Navigation() {
 
       <Snackbar
         duration={3000}
-        style={{ backgroundColor: theme ? Colors.PRIMARY_COLOR : Colors.BLACK }}
+        style={{ backgroundColor: theme ? Colors.PRIMARY_COLOR : Colors.BLACK,  }}
+        
         visible={showAlert}
         onDismiss={() => dispatch(hideAlert())}
       >
