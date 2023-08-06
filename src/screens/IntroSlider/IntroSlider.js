@@ -10,9 +10,11 @@ import TextComponent from '../../components/TextComponent';
 import {Sizes} from '../../config/Sizes';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const IntroSlider = () => {
   const navigation = useNavigation();
+  const theme = useSelector(state => state.AppReducer.theme)
   const slides = [
     {
       key: 1,
@@ -42,7 +44,7 @@ const IntroSlider = () => {
 
   const renderItem = ({item}) => {
     return (
-      <View style={styles.main_container}>
+      <View style={[styles.main_container , { backgroundColor:theme ? Colors.BLACK : Colors.WHITE }]}>
         <View style={{flex: 1}}>
           <Image source={item?.image} style={styles.image} />
         </View>
@@ -71,7 +73,6 @@ export default IntroSlider;
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
   },
   image: {
     width: 250,

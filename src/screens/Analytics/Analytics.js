@@ -8,8 +8,12 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useSelector } from 'react-redux';
 
 const Analytics = () => {
+
+  const theme = useSelector(state => state.AppReducer.theme)
+
   const barData = [
     {
       value: 40,
@@ -125,7 +129,7 @@ const Analytics = () => {
 
   const renderCategoryItem = ({item}) => {
     return (
-      <View style={styles.category_item}>
+      <View style={[styles.category_item , { backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
         {item?.icon}
         <TextComponent text={item?.name} />
       </View>
@@ -133,11 +137,11 @@ const Analytics = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       <TextComponent text={'Analytics'} style={styles.heading} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <TextComponent text={'Overview'} style={styles.sub_heading} />
+        <TextComponent text={'Overview'} style={[styles.sub_heading , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
         <BarChart
           barWidth={10}
           noOfSections={3}
@@ -165,7 +169,7 @@ const Analytics = () => {
           </View>
         </View>
 
-        <TextComponent text={'Expense ratio'}  style={[styles.sub_heading, {marginTop: 30, marginBottom: 10}]} />
+        <TextComponent text={'Expense ratio'}  style={[styles.sub_heading, {color: theme ? Colors.WHITE : Colors.BLACK , marginTop: 30, marginBottom: 10}]} />
 
         <FlatList
           data={categories}
@@ -186,8 +190,9 @@ const Analytics = () => {
             onLabelPress={(item, index) => console.log(item)}
             textSize={13}
             strokeColor="transparent"
-            strokeWidth={60}
+            strokeWidth={70}
             shiftInnerCenterX={5}
+            innerCircleColor={theme ? Colors.BLACK : Colors.WHITE}
             shiftInnerCenterY={8}
           />
         </View>
@@ -201,7 +206,6 @@ export default Analytics;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
     padding: 20,
     paddingBottom: 60,
   },
@@ -212,7 +216,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   heading: {
-    color: Colors.BLACK,
     fontSize: Sizes.h3,
   },
   category_item: {

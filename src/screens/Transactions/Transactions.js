@@ -8,11 +8,14 @@ import TextComponent from '../../components/TextComponent';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Sizes } from '../../config/Sizes';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 
 const Transactions = () => {
   const [activeComponent, setactiveComponent] = useState('Income');
 const navigation = useNavigation()
+const theme = useSelector(state => state.AppReducer.theme)
+
   const options = [
     {
       id: 1,
@@ -25,12 +28,12 @@ const navigation = useNavigation()
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , { backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
 
       <View style={styles.flex}>
         <TextComponent text={'Transactions'} style={styles.heading} />
         <TouchableOpacity onPress={()=> navigation.navigate('AddTransaction')}>
-        <Ionicons name='add-circle-outline' color={Colors.BLACK} size={23} />
+        <Ionicons name='add-circle-outline' color={theme ? Colors.WHITE : Colors.BLACK} size={23} />
         </TouchableOpacity>
       </View>
 
@@ -50,7 +53,6 @@ export default Transactions;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
   },
   flex:{
     flexDirection: 'row',

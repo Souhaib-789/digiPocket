@@ -1,13 +1,24 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Modal} from 'react-native';
 import {Colors} from '../config/Colors';
 import TextComponent from './TextComponent';
 import * as Progress from 'react-native-progress';
+import { useSelector } from 'react-redux';
 
-export const Loader = () => {
+export const Loader = (props) => {
+  const theme = useSelector(state => state.AppReducer.theme)
+
   return (
-    <View style={styles.container}>
-      <TextComponent text={'Please Wait ...'} style={styles.text} />
+    <Modal 
+     animationType="fade"
+    transparent={true}
+    visible={props?.visible} >
+    <View style={styles.container} >
+
+      <View style={[styles.sub_container , {     backgroundColor: theme ? Colors.BLACK : Colors.WHITE,
+}]}>
+      <TextComponent text={'Please Wait ...'} style={[styles.text , {    color: theme ? Colors.WHITE: Colors.PRIMARY_COLOR,
+}]} />
       <Progress.Bar
         progress={2}
         height={8}
@@ -18,20 +29,27 @@ export const Loader = () => {
         indeterminate={true}
         borderWidth={1}
       />
+      </View>
     </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
+    backgroundColor: "rgba(00, 00, 00, 0.3)",
+      alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sub_container:{
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: 20,
+    padding: 40
   },
   text: {
-    color: Colors.PRIMARY_COLOR,
     fontWeight: 'bold'
   },
 });

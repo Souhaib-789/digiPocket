@@ -15,24 +15,31 @@ import {Switch} from 'react-native-switch';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import Alternate from '../../assets/alternate.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTheme, showAlert, showLoading } from '../../redux/actions/AppAction';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Logout } from '../../redux/actions/AuthActions';
 
 const Settings = () => {
   const navigation = useNavigation();
-  const [Value, setValue] = useState(false);
+  const theme = useSelector(state => state.AppReducer.theme)
+  const [Value, setValue] = useState(theme);
+  const dispatch = useDispatch()
+  console.log(theme);
 
   const options = [
     {
-      icon: <Feather name={'info'} color={Colors.BLACK} size={20} />,
+      icon: <Feather name={'info'} color={theme ? Colors.WHITE : Colors.BLACK} size={20} />,
       name: 'About',
       // onPress:
     },
     {
-      icon: <Feather name={'help-circle'} color={Colors.BLACK} size={20} />,
+      icon: <Feather name={'help-circle'} color={theme ? Colors.WHITE : Colors.BLACK} size={20} />,
       name: 'Help',
       // onPress:
     },
     {
-      icon: <Feather name={'globe'} color={Colors.BLACK} size={20} />,
+      icon: <Feather name={'globe'} color={theme ? Colors.WHITE : Colors.BLACK} size={20} />,
       name: 'Language',
       extraData: 'English'
       // onPress:
@@ -40,17 +47,25 @@ const Settings = () => {
     {
       icon: <MaterialIcons name={'logout'} color={Colors.RED} size={20} />,
       name: 'Logout',
-      dZ: true
-      // onPress:
+      dZ: true,
+      onPress:  () => {
+        try {
+            dispatch(Logout())
+             AsyncStorage.clear();
+          dispatch(showAlert('Logged out!'))
+        } catch (e) {
+            console.log(e);
+        }
+    }
     },
   ];
 
   const renderItem = ({item}) => {
     return (
-      <TouchableOpacity style={styles.option}>
+      <TouchableOpacity style={styles.option} onPress={item?.onPress}>
         <View style={styles.flex}>
           {item?.icon}
-          <TextComponent text={item?.name} style={[styles.text , {color: item?.dZ ? Colors.RED: Colors.BLACK}]} />
+          <TextComponent text={item?.name} style={[styles.text , {color: item?.dZ ? Colors.RED : theme ? Colors.WHITE : Colors.BLACK}]} />
         </View>
         <View style={styles.flex}>
         {item?.extraData && <TextComponent text={item?.extraData} style={styles.textx} /> } 
@@ -60,10 +75,17 @@ const Settings = () => {
     );
   };
 
+ 
+
+  const onChangeTheme = (e) =>  {
+  setValue(e);
+  dispatch(setTheme(e))
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       
-        <TextComponent text={'Settings'} style={styles.heading} />
+        <TextComponent text={'Settings'} style={[styles.heading , {color: theme ? Colors.WHITE : Colors.BLACK }]} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <TouchableOpacity onPress={()=> navigation.navigate('EditProfile')}
@@ -95,9 +117,7 @@ const Settings = () => {
 
           <Switch
             value={Value}
-            onValueChange={val => {
-              setValue(val);
-            }}
+            onValueChange={(e) => onChangeTheme(e)}
             circleSize={23}
             barHeight={15}
             circleBorderWidth={2}
@@ -135,7 +155,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   heading: {
-    color: Colors.BLACK,
     fontSize: Sizes.h3,
     marginBottom: 20
   },

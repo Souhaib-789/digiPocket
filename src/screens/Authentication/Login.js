@@ -14,17 +14,47 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import {Sizes} from '../../config/Sizes';
+import { useDispatch, useSelector } from 'react-redux';
+import { userExist } from '../../redux/actions/AuthActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { hideLoading, showAlert, showLoading } from '../../redux/actions/AppAction';
+import auth from '@react-native-firebase/auth';
 
 const Login = () => {
   const navigation = useNavigation();
+  const theme = useSelector(state => state.AppReducer.theme)
+  const dispatch = useDispatch()
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [hidePassword, sethidePassword] = useState(true);
 
-  const onPressLogin = () => {};
+  const onPressLogin = async () => {
+    if (!email) {
+        dispatch(showAlert('Please enter your name !'))
+    } 
+    else if(!password){
+      dispatch(showAlert('Please enter passsword !'))
+    } else {
+        dispatch(showLoading())
+        await auth()
+            .signInWithEmailAndPassword(email, password)
+            .then((res) => {
+                let token = res?.user?.uid
+                AsyncStorage.setItem('@token', token)
+                AsyncStorage.setItem('@user', JSON.stringify(res?.user))
+                dispatch(userExist(true))
+            })
+            .catch(error => {
+                console.log(error.message);
+                dispatch(showAlert('email or password is invalid!'))
+            }).finally(()=> {
+              dispatch(hideLoading())
+            })
+    }
+}
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image source={Corner} style={styles.image} />
 
@@ -88,7 +118,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   heading: {
-    color: Colors.BLACK,
     fontSize: 27,
     fontWeight: 'bold',
     marginBottom: 15,

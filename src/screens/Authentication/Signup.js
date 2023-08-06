@@ -14,9 +14,19 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import {Sizes} from '../../config/Sizes';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  hideLoading,
+  showAlert,
+  showLoading,
+} from '../../redux/actions/AppAction';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const Signup = () => {
   const navigation = useNavigation();
+  const theme = useSelector(state => state.AppReducer.theme)
+  const dispatch = useDispatch();
   const [name, setName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -24,11 +34,56 @@ const Signup = () => {
   const [hidePassword, sethidePassword] = useState(true);
   const [hideConfirmPassword, sethideConfirmPassword] = useState(true);
 
-  const onPressSignup = () => {
-     navigation.navigate('Login')};
+  const onPressSignup =   () => {
+    if (!name) {
+      dispatch(showAlert('Please enter your name'));
+    }
+    else if (!email) {
+      dispatch(showAlert('Please enter email address'));
+    }
+    else if (!password) {
+      dispatch(showAlert('Please enter password'));
+    }
+    else if (!confirmPassword) {
+      dispatch(showAlert('Please confirm your entered password'));
+    } else if (password !== confirmPassword) {
+      dispatch(showAlert('Confirm password does not match'));
+    } else {
+      dispatch(showLoading());
+
+       auth()
+        .createUserWithEmailAndPassword(email, confirmPassword)
+        .then(() => {
+          dispatch(showAlert('Your account has been created !'));
+          console.log('User account created !');
+
+          firestore()
+            .collection('Users')
+            .doc(auth().currentUser.uid)
+            .set({
+              name: name,
+              email: email,
+              createdAt: firestore.Timestamp.fromDate(new Date()),
+              userImg: null,
+            });
+
+           navigation.navigate('Login');
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            dispatch(showAlert('That email address is already in use!'));
+          }
+          if (error.code === 'auth/invalid-email') {
+            dispatch(showAlert('That email address is invalid!'));
+          }
+          console.error(error);
+        })
+        .finally(dispatch(hideLoading()));
+    }
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image source={Corner} style={styles.image} />
 
@@ -114,7 +169,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   heading: {
-    color: Colors.BLACK,
     fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 15,

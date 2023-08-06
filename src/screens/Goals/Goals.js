@@ -9,17 +9,20 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import * as Progress from 'react-native-progress';
 import { useNavigation } from '@react-navigation/native';
 import { ListEmptyComponent } from '../../components/ListEmptyComponent';
+import { useSelector } from 'react-redux';
 
 const Goals = () => {
   const [Value, setValue] = useState(false);
   const navigation = useNavigation()
+  const theme = useSelector(state => state.AppReducer.theme)
+
   const renderListItem = ({item}) => {
     return (
       <View style={styles.list_item}>
         <View style={styles.flex}>
-          <FontAwesome6 size={18} color={Colors.BLACK} name="cart-shopping" />
+          <FontAwesome6 size={18} color={theme ? Colors.WHITE : Colors.BLACK} name="cart-shopping" />
           <View style={{gap: 8}}>
-            <TextComponent text={'Car'} style={styles.list_text} />
+            <TextComponent text={'Car'} style={[styles.list_text , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
             <Progress.Bar
               progress={0.8}
               height={5}
@@ -31,30 +34,31 @@ const Goals = () => {
             />
           </View>
         </View>
-        <TextComponent text={'$200'} style={styles.expense_text} />
+        <TextComponent text={'$200'} style={[styles.expense_text , {color : theme ? Colors.WHITE : Colors.BLACK }]} />
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
+
       <TextComponent text={'Goals'} style={styles.heading} />
 
       <ScrollView>
-        <View style={styles.box}>
+        <View style={[styles.box, {backgroundColor : theme ? Colors.BLACK : Colors.WHITE}]}>
           <Ionicons
             name="checkmark-done-circle"
             color={Colors.PRIMARY_COLOR}
             size={30}
           />
           <View>
-            <TextComponent text={'Goals Achieved'} style={styles.box_span} />
-            <TextComponent text={'0/1'} style={styles.box_heading} />
+            <TextComponent text={'Goals Achieved'} style={[styles.box_span , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
+            <TextComponent text={'0/1'} style={[styles.box_heading , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
           </View>
         </View>
 
         <View style={styles.flex}>
-          <TextComponent text={'Show Achieved Goals'} style={styles.box_span} />
+          <TextComponent text={'Show Achieved Goals'} style={[styles.box_span , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
 
           <Switch
             value={Value}
@@ -73,7 +77,7 @@ const Goals = () => {
           />
         </View>
 
-        <TextComponent text={'Current Goals'} style={styles.sub_heading} />
+        <TextComponent text={'Current Goals'} style={[styles.sub_heading, { color: theme ? Colors.WHITE: Colors.BLACK}]} />
         <FlatList
           data={[1, 2]}
           renderItem={renderListItem}
@@ -84,7 +88,7 @@ const Goals = () => {
 
         {Value && (
           <>
-            <TextComponent text={'Achieved Goals'} style={styles.sub_heading} />
+            <TextComponent text={'Achieved Goals'} style={[styles.sub_heading, { color: theme ? Colors.WHITE: Colors.BLACK}]} />
             <FlatList
               data={[1, 2]}
               renderItem={renderListItem}
@@ -108,16 +112,13 @@ export default Goals;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
     padding: 20,
     paddingBottom: 80,
   },
   heading: {
-    color: Colors.BLACK,
     fontSize: Sizes.h3,
   },
   box: {
-    backgroundColor: Colors.WHITE,
     elevation: 5,
     borderRadius: 10,
     paddingVertical: 20,
@@ -130,11 +131,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   box_span: {
-    color: Colors.BLACK,
     fontSize: Sizes.h6,
   },
   box_heading: {
-    color: Colors.BLACK,
     fontSize: Sizes.h3,
     fontWeight: 'bold',
   },
@@ -144,7 +143,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   list_text: {
-    color: Colors.BLACK,
     fontSize: Sizes.h5,
   },
   expense_text: {
@@ -153,7 +151,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   sub_heading: {
-    color: Colors.BLACK,
     fontSize: Sizes.h5,
     fontWeight: 'bold',
     marginTop: 30,

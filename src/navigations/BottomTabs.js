@@ -8,11 +8,13 @@ import Settings from '../screens/Settings/Settings';
 import { Colors } from '../config/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Goals from '../screens/Goals/Goals';
+import { useSelector } from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
     const hideHeader = {headerShown: false}
+    const theme = useSelector(state => state.AppReducer.theme)
 
   return (
   
@@ -38,8 +40,11 @@ export default function BottomTabs() {
         tabBarActiveTintColor: 'white',
         tabBarActiveBackgroundColor: Colors.PRIMARY_COLOR,
         tabBarItemStyle: {borderRadius: 50 , margin: 5},
-        tabBarInactiveTintColor: Colors.BLACK,
-        tabBarStyle: {  backgroundColor: Colors.WHITE,position: 'absolute', bottom: 25 ,left: 20 , right: 20 , elevation: 3 ,borderRadius: 50 , height: 60 , borderBlockColor: Colors.LGREY, shadowColor: Colors.LGREY  },
+        tabBarInactiveTintColor: theme ? Colors.LLGREY : Colors.BLACK,
+        tabBarStyle: {  backgroundColor: theme ? Colors.BLACK : Colors.WHITE ,
+           position: 'absolute', bottom: 25 ,left: 20 , right: 20 ,
+            elevation: 3 ,borderRadius: 50 , height: 60 , 
+            borderBlockColor: Colors.LLGREY, shadowColor: theme ? Colors.WHITE : Colors.GREY },
       })}
       >
 

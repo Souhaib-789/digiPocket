@@ -2,16 +2,20 @@ import React from 'react';
 import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
 import TextComponent from './TextComponent';
 import {Colors} from '../config/Colors';
+import { useSelector } from 'react-redux';
 
 const Input = props => {
+  const theme = useSelector(state => state.AppReducer.theme)
+
   return (
     <View style={styles.container}>
       {props?.label && (
-        <TextComponent text={props?.label} style={styles.label} />
+        <TextComponent text={props?.label} style={[styles.label , {     backgroundColor: theme ? Colors.BLACK : Colors.WHITE        }]} />
       )}
 
       <TextInput 
       placeholder={props?.placeholder} 
+      placeholderTextColor={theme ? Colors.LLGREY : null}
       value={props?.value}
       onChangeText={props?.onChangeText}
       editable={props?.editable}
@@ -19,7 +23,8 @@ const Input = props => {
       keyboardType={props?.keyboardType}
       multiline={props?.multiline}
       numberOfLines={props?.numberOfLines}
-      style={[styles.input , {...props?.style}]}
+      style={[styles.input , {    color: theme ? Colors.WHITE: Colors.BLACK
+      }, {...props?.style}]}
       />
 
       {props?.rightIcon && (
@@ -46,13 +51,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -12,
     left: 7,
-    backgroundColor: Colors.WHITE,
     paddingHorizontal: 10,
     textAlign: 'center',
   },
   input:{
     width: '90%',
-    color: Colors.BLACK
   }
 });
 

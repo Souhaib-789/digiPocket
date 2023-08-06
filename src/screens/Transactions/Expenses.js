@@ -9,20 +9,22 @@ import TextComponent from '../../components/TextComponent';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import {ListEmptyComponent} from '../../components/ListEmptyComponent';
 import {useNavigation} from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const Expenses = () => {
 
   const navigation = useNavigation()
+  const theme = useSelector(state => state.AppReducer.theme)
 
   const renderListItem = ({item}) => {
     return (
-      <View style={styles.list_item}>
+      <View style={[styles.list_item , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
         <View style={styles.flex}>
           <View style={styles.icon_circle}>
-            <FontAwesome6 size={18} color={Colors.WHITE} name="cart-shopping" />
+            <FontAwesome6 size={18} color={theme ? Colors.BLACK : Colors.WHITE} name="cart-shopping" />
           </View>
           <View style={{marginLeft: 10}}>
-            <TextComponent text={'Shopping'} style={styles.list_text} />
+            <TextComponent text={'Shopping'} style={[styles.list_text , { color: theme ? Colors.WHITE : Colors.BLACK}]} />
             <TextComponent text={'05/03/23'} style={styles.sub_heading} />
           </View>
         </View>
@@ -38,7 +40,7 @@ const Expenses = () => {
           <TouchableOpacity style={styles.hidden_button} onPress={()=> navigation.navigate('AddTransaction', {item: item , purpose : 'Edit'})}>
             <Feather size={20} color={Colors.WHITE} name="edit" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.hidden_buttonx}>
+          <TouchableOpacity style={[styles.hidden_buttonx , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
             <AntDesign size={20} color={Colors.PRIMARY_COLOR} name="delete" />
           </TouchableOpacity>
         </View>
@@ -47,7 +49,7 @@ const Expenses = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {    backgroundColor: theme ? Colors.BLACK : Colors.WHITE }]}>
       <SwipeListView
         style={{marginTop: 7}}
         data={[1, 2, 3, 4, 5, 6, 7, 8]}
@@ -67,7 +69,6 @@ export default Expenses;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
     padding: 20,
     paddingBottom: 80,
   },
@@ -80,7 +81,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   list_text: {
-    color: Colors.BLACK,
     fontSize: Sizes.h5,
   },
   expense_text: {
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingVertical: 16,
     paddingHorizontal: 5,
-    backgroundColor: Colors.WHITE,
     height: 60
  },
 
@@ -115,7 +114,6 @@ const styles = StyleSheet.create({
     width: 39,
   },
   hidden_buttonx: {
-    backgroundColor: Colors.WHITE,
     borderColor: Colors.PRIMARY_COLOR,
     borderWidth: 1,
     borderRadius: 10,

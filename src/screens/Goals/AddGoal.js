@@ -17,6 +17,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import { Modal } from '../../components/Modal';
+import { useSelector } from 'react-redux';
 
 const AddGoal = () => {
   const navigation = useNavigation();
@@ -27,6 +28,8 @@ const AddGoal = () => {
   const [description, setdescription] = useState(null);
   const [Value, setValue] = useState(false);
   const [openModal, setopenModal] = useState(false);
+
+  const theme = useSelector(state => state.AppReducer.theme)
 
 
   const GoalCategories = [
@@ -45,12 +48,12 @@ const AddGoal = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       <View style={[styles.flex, {marginBottom: 40, gap: 12}]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <AntDesign size={23} color={Colors.BLACK} name="arrowleft" />
+          <AntDesign size={23} color={theme ? Colors.WHITE : Colors.BLACK} name="arrowleft" />
         </TouchableOpacity>
-        <TextComponent text={'Add New Goal'} style={styles.heading} />
+        <TextComponent text={'Add New Goal'} style={[styles.heading ]} />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -76,13 +79,13 @@ const AddGoal = () => {
             setcategory(selectedItem);
           }}
           defaultButtonText="Select category"
-          buttonTextStyle={{fontSize: Sizes.h5, color: Colors.BLACK}}
+          buttonTextStyle={{fontSize: Sizes.h5, color: theme ? Colors.WHITE : Colors.BLACK}}
           search
           renderDropdownIcon={() => (
             <MaterialIcons
               name="keyboard-arrow-down"
               size={18}
-              color={Colors.BLACK}
+              color={theme ? Colors.WHITE : Colors.BLACK}
             />
           )}
           renderSearchInputLeftIcon={() => (
@@ -99,12 +102,12 @@ const AddGoal = () => {
           searchInputStyle={{
             borderBottomColor: Colors.LLGREY,
             borderBottomWidth: 1,
-            backgroundColor: Colors.WHITE,
+            backgroundColor: theme ? Colors.BLACK: Colors.WHITE,
           }}
           selectedRowTextStyle={{color: Colors.PRIMARY_COLOR}}
           dropdownStyle={{
             borderRadius: 10,
-            backgroundColor: Colors.WHITE,
+            backgroundColor: theme ? Colors.BLACK: Colors.WHITE,
             borderWidth: 1,
             borderColor: Colors.GREY,
           }}
@@ -170,11 +173,9 @@ export default AddGoal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
     padding: 20,
   },
   heading: {
-    color: Colors.BLACK,
     fontSize: Sizes.h3,
   },
   flex: {

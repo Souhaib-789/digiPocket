@@ -2,16 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Colors } from '../config/Colors';
 import { Sizes } from '../config/Sizes';
-
+import { useSelector } from 'react-redux';
 const TopTab = (props) => {
-
+    const theme = useSelector(state => state.AppReducer.theme)
     return (
-        <View style={styles.container}>
+        <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
             {
                 props?.options?.map((item, index) => {
                     return (
-                        <TouchableOpacity key={index} style={[styles.tab , {backgroundColor: item?.name == props?.focused ? Colors.PRIMARY_COLOR : Colors.WHITE}]} onPress={() => props?.onActivePress(item)}>
-                            <Text style={[styles.text, { color: item?.name == props?.focused ? Colors.WHITE : Colors.BLACK }]}>{item?.name}</Text>
+                        <TouchableOpacity key={index} style={[styles.tab , {backgroundColor: item?.name == props?.focused ? Colors.PRIMARY_COLOR : (theme ? Colors.BLACK : Colors.WHITE)}]} onPress={() => props?.onActivePress(item)}>
+                            <Text style={[styles.text, { color: item?.name == props?.focused ? Colors.WHITE : (theme ? Colors.WHITE : Colors.BLACK) }]}>{item?.name}</Text>
                         </TouchableOpacity>
                     )
                 })
@@ -24,7 +24,6 @@ export default TopTab;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.WHITE,
         width: '100%',
         padding: 8,
         borderRadius: 10,

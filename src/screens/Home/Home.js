@@ -8,14 +8,17 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
 import { ListEmptyComponent } from '../../components/ListEmptyComponent';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
   const navigation = useNavigation();
+  const theme = useSelector(state => state.AppReducer.theme)
+
   const renderListItem = ({item}) => {
     return (
-      <View style={styles.list_item}>
+      <View style={[styles.list_item, {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
         <View style={styles.flex}>
-          <View style={styles.icon_circle}>
+          <View style={[styles.icon_circle , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
             <FontAwesome6
               size={18}
               color={Colors.PRIMARY_COLOR}
@@ -23,7 +26,7 @@ const Home = () => {
             />
           </View>
           <View style={{marginLeft: 10}}>
-            <TextComponent text={'Shopping'} style={styles.list_text} />
+            <TextComponent text={'Shopping'} style={[styles.list_text, {color: theme ? Colors.WHITE : Colors.BLACK}]} />
             <TextComponent text={'05/03/23'} style={styles.sub_heading} />
           </View>
         </View>
@@ -33,7 +36,7 @@ const Home = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {  backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       <ScrollView>
         <View style={styles.sub_container} >
 
@@ -54,26 +57,26 @@ const Home = () => {
         </View>
 
         <View style={styles.cards_view}>
-          <View style={styles.box}>
+          <View style={[styles.box, {backgroundColor: theme? Colors.BLACK : Colors.WHITE}]}>
             <MaterialCommunityIcons name="arrow-bottom-left"  color={Colors.PRIMARY_COLOR} size={25}  />
             <View>
-              <TextComponent text={'Income'} style={styles.box_span} />
-              <TextComponent text={'$ 5000.00'} style={styles.box_heading} />
+              <TextComponent text={'Income'} style={[styles.box_span, {color : theme ? Colors.WHITE : Colors.BLACK}]} />
+              <TextComponent text={'$ 5000.00'} style={[styles.box_heading , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
             </View>
           </View>
 
-          <View style={styles.box}>
+          <View style={[styles.box, {backgroundColor: theme? Colors.BLACK : Colors.WHITE}]}>
             <MaterialCommunityIcons name="arrow-top-right" color={Colors.PRIMARY_COLOR} size={25}  />
             <View>
-              <TextComponent text={'Expense'} style={styles.box_span} />
-              <TextComponent text={'$ 200.00'} style={styles.box_heading} />
+              <TextComponent text={'Expense'} style={[styles.box_span , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
+              <TextComponent text={'$ 200.00'} style={[styles.box_heading , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
             </View>
           </View>
         </View>
 
-        <View style={styles.lower_container}>
+        <View style={[styles.lower_container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
           <View style={styles.flexA}>
-            <TextComponent text={'Recent Transactions'} style={styles.headingx} />
+            <TextComponent text={'Recent Transactions'} style={[styles.headingx , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
             <TouchableOpacity onPress={() => navigation.navigate('Transactions')} >
               <TextComponent text={'See all '} style={styles.sub_heading} />
             </TouchableOpacity>
@@ -96,7 +99,6 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
   },
   sub_container: {
     backgroundColor: Colors.PRIMARY_COLOR,
@@ -139,8 +141,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   heading: {
-    color: Colors.WHITE,
     fontSize: Sizes.h3,
+    color: 'white'
   },
   headingx: {
     color: Colors.BLACK,

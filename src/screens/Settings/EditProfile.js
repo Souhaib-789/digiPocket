@@ -9,11 +9,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ImageUploader from '../../components/ImageUploader';
 import {useNavigation} from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 
 const EditProfile = () => {
   const [image, setimage] = useState(null);
   const navigation = useNavigation();
+  const theme = useSelector(state => state.AppReducer.theme)
 
   const openImagePicker = () => {
     ImageUploader(e => {
@@ -29,10 +31,10 @@ const EditProfile = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
       <View style={styles.flex}>
         <TouchableOpacity onPress={()=> navigation.goBack()}>
-          <AntDesign size={23} color={Colors.BLACK} name="arrowleft" />
+          <AntDesign size={23} color={theme ? Colors.WHITE : Colors.BLACK} name="arrowleft" />
         </TouchableOpacity>
         <TextComponent text={'Edit Profile'} style={styles.heading} />
       </View>
@@ -43,7 +45,8 @@ const EditProfile = () => {
           source={image?.uri ? {uri: image?.uri} : Alternate}
           style={styles.image}
         />
-        <TouchableOpacity style={styles.pick_icon} onPress={openImagePicker}>
+        <TouchableOpacity style={[styles.pick_icon , 
+    {backgroundColor: theme ? Colors.BLACK : Colors.WHITE , shadowColor: theme ? Colors.LLGREY : Colors.BLACK}]} onPress={openImagePicker}>
           <Ionicons
             name="camera-outline"
             color={Colors.PRIMARY_COLOR}
@@ -62,7 +65,6 @@ export default EditProfile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
   },
   heading: {
     fontSize: Sizes.h3,
@@ -104,7 +106,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.WHITE,
     elevation: 10,
     padding: 8,
     position: 'absolute',

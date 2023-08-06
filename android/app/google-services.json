@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "849817377915",
+    "project_id": "digi-pocket-c0305",
+    "storage_bucket": "digi-pocket-c0305.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849817377915:android:410d33d87c8ad53b1e96de",
+        "android_client_info": {
+          "package_name": "com.digipocket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849817377915-nim9clbkve7qv5kup9t4cvtkd1k065as.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu_Pb1m4mcn6yVe3yiraF7WmS3qvbrbhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849817377915-nim9clbkve7qv5kup9t4cvtkd1k065as.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

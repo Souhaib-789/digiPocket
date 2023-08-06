@@ -1,6 +1,4 @@
 export const Colors = {
-    // WHITE : '#000',
-    // BLACK : '#ffff',
     WHITE : '#fff',
     BLACK : '#000',
 

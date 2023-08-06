@@ -9,8 +9,12 @@ import {
 import {Colors} from '../config/Colors';
 import TextComponent from './TextComponent';
 import {Sizes} from '../config/Sizes';
+import { useSelector } from 'react-redux';
 
 export const Modal = props => {
+
+  const theme = useSelector(state => state.AppReducer.theme)
+
   return (
     <RNModal
       animationType="slide"
@@ -18,9 +22,9 @@ export const Modal = props => {
       visible={props?.visible}
       onRequestClose={props?.onClose}>
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+        <View style={[styles.modalView , { backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
           <Image source={props?.image} style={styles.image} />
-          <TextComponent text={props?.title} style={styles.modalHeading} />
+          <TextComponent text={props?.title} style={[styles.modalHeading  , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
           <TextComponent text={props?.text} style={styles.modalText} />
 
           <View style={styles.btnview}>
@@ -65,7 +69,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RGBA3,
   },
   modalView: {
-    backgroundColor: Colors.WHITE,
     borderRadius: 15,
     paddingHorizontal: 10,
     alignItems: 'center',
@@ -88,7 +91,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.PRIMARY_COLOR,
   },
   textStyle: {
-    color: Colors.WHITE,
     textAlign: 'center',
   },
   modalText: {
