@@ -45,7 +45,7 @@ const Goals = () => {
 
       <TextComponent text={'Goals'} style={styles.heading} />
 
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={[styles.box, {backgroundColor : theme ? Colors.BLACK : Colors.WHITE}]}>
           <Ionicons
             name="checkmark-done-circle"

@@ -24,6 +24,8 @@ import { Fonts } from '../../config/Fonts';
 const Settings = () => {
   const navigation = useNavigation();
   const theme = useSelector(state => state.AppReducer.theme)
+  const user = useSelector(state => state.AuthReducer.userInfo)
+
   const [Value, setValue] = useState(theme);
   const dispatch = useDispatch()
 
@@ -92,7 +94,7 @@ const Settings = () => {
           <View style={styles.flex}>
             <Image source={Alternate} style={styles.image} />
             <View>
-              <TextComponent text={'M. Souhaib'} style={styles.sub_heading} />
+              <TextComponent text={user?.displayName} style={styles.sub_heading} />
               <TextComponent text={'Edit Profile'} style={styles.span} />
             </View>
           </View>

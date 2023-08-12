@@ -12,7 +12,8 @@ import { useSelector } from 'react-redux';
 
 
 const Transactions = () => {
-  const [activeComponent, setactiveComponent] = useState('Income');
+
+const [activeComponent, setactiveComponent] = useState('Income');
 const navigation = useNavigation()
 const theme = useSelector(state => state.AppReducer.theme)
 

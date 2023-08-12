@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, TouchableOpacity, ScrollView} from 'react-native';
 import {Colors} from '../../config/Colors';
 import TextComponent from '../../components/TextComponent';
@@ -14,25 +14,33 @@ import SelectDropdown from 'react-native-select-dropdown';
 import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import {Modal} from '../../components/Modal';
-import { useSelector } from 'react-redux';
-import { Fonts } from '../../config/Fonts';
+import {useDispatch, useSelector} from 'react-redux';
+import {Fonts} from '../../config/Fonts';
+import {
+  hideLoading,
+  showAlert,
+  showLoading,
+} from '../../redux/actions/AppAction';
+import firestore from '@react-native-firebase/firestore';
 
 const AddTransaction = props => {
   const routeData = props?.route?.params?.item;
+  const Transtype = props?.route?.params?.type;
   const purpose = props?.route?.params?.purpose;
-
-  const theme = useSelector(state => state.AppReducer.theme)
+  const theme = useSelector(state => state.AppReducer.theme);
+  const userID = useSelector(state => state.AuthReducer.userInfo.uid);
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [name, setname] = useState(null);
-  const [amount, setamount] = useState(null);
+  const [name, setname] = useState(routeData?.name);
+  const [amount, setamount] = useState(routeData?.amount);
   const [type, settype] = useState('Expense');
   const [category, setcategory] = useState(null);
-  const [TransactionDate, setTransactionDate] = useState(null);
-  const [description, setdescription] = useState(null);
-
+  const [TransactionDate, setTransactionDate] = useState(routeData?.date);
+  const [description, setdescription] = useState(routeData?.description);
+  const transactionid = Math.random().toString().substring(2, 8);
   const [date, setDate] = useState(new Date());
   const [openModal, setOpenModal] = useState(false);
-  const [Value, setValue] = useState(false);
+  const [Value, setValue] = useState(Transtype == 'Income' ? true : false);
   const [openSuccesModal, setopenSuccesModal] = useState(false);
 
   const IncomeCategories = ['Salary', 'Awards', 'Profit', 'Grants', 'Refunds'];
@@ -46,19 +54,103 @@ const AddTransaction = props => {
     'Gift',
     'Fuel',
     'Rent',
+    'Medical',
   ];
 
-  const onPressAddTransaction = () => {
-    setopenSuccesModal(true);
+  const onPressAddExpense = async () => {
+    if (!name) {
+      dispatch(showAlert('Enter transaction name'));
+    } else if (!amount) {
+      dispatch(showAlert('Enter amount!'));
+    } else if (!TransactionDate) {
+      dispatch(showAlert('Select date!'));
+    } else if (!category) {
+      dispatch(showAlert('Select category!'));
+    } else {
+      dispatch(showLoading());
+      let newExpenses = {
+        id: transactionid,
+        name: name,
+        amount: amount,
+        date: TransactionDate,
+        category: category,
+        description: description ? description : null,
+      };
+      const usersCollectionRef = firestore().collection('Users');
+      // The arrayUnion method will ensure that the new expenses are appended to the "expenses" array in the document, and any duplicate expenses will not be added again.
+      await usersCollectionRef
+        .doc(userID)
+        .update({
+          expenses: firestore.FieldValue.arrayUnion(newExpenses),
+        })
+        .then(() => {
+          setopenSuccesModal(true);
+        })
+        .catch(error => {
+          console.log('Something went wrong with order posting', error);
+          dispatch(showAlert('something went wrong'));
+        })
+        .finally(() => {
+          dispatch(hideLoading());
+        });
+    }
+  };
+
+  const onPressAddIncome = async () => {
+    if (!name) {
+      dispatch(showAlert('Enter transaction name'));
+    } else if (!amount) {
+      dispatch(showAlert('Enter amount!'));
+    } else if (!TransactionDate) {
+      dispatch(showAlert('Select date!'));
+    } else if (!category) {
+      dispatch(showAlert('Select category!'));
+    } else {
+      dispatch(showLoading());
+      let newExpenses = {
+        id: transactionid,
+        name: name,
+        amount: amount,
+        date: TransactionDate,
+        category: category,
+        description: description ? description : null,
+      };
+      const usersCollectionRef = firestore().collection('Users');
+      // The arrayUnion method will ensure that the new expenses are appended to the "expenses" array in the document, and any duplicate expenses will not be added again.
+      await usersCollectionRef
+        .doc(userID)
+        .update({
+          income: firestore.FieldValue.arrayUnion(newExpenses),
+        })
+        .then(() => {
+          setopenSuccesModal(true);
+        })
+        .catch(error => {
+          console.log('Something went wrong with order posting', error);
+          dispatch(showAlert('Network Error'));
+        })
+        .finally(() => {
+          dispatch(hideLoading());
+        });
+    }
   };
 
   const onPressEditTransaction = () => {};
+
   return (
-    <View style={[styles.container  , {backgroundColor: theme ? Colors.BLACK :Colors.WHITE}]}>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: theme ? Colors.BLACK : Colors.WHITE},
+      ]}>
       <View style={[styles.flex, {marginBottom: 40, gap: 12}]}>
         {purpose ? null : (
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <AntDesign size={23} color={theme ? Colors.WHITE : Colors.BLACK} name="arrowleft" />
+            <AntDesign
+              size={23}
+              color={theme ? Colors.WHITE : Colors.BLACK}
+              name="arrowleft"
+            />
           </TouchableOpacity>
         )}
 
@@ -133,6 +225,7 @@ const AddTransaction = props => {
           onChangeText={e => setamount(e)}
           keyboardType={'phone-pad'}
           placeholder={'Rs. 10000'}
+          maxLength={7}
         />
 
         <Input
@@ -155,8 +248,14 @@ const AddTransaction = props => {
           onSelect={(selectedItem, index) => {
             setcategory(selectedItem);
           }}
-          defaultButtonText="Select category"
-          buttonTextStyle={{fontSize: Sizes.h5, color:theme ? Colors.WHITE : Colors.BLACK,  fontFamily: Fonts.Regular}}
+          defaultButtonText={
+            routeData?.category ? routeData?.category : 'Select category'
+          }
+          buttonTextStyle={{
+            fontSize: Sizes.h5,
+            color: theme ? Colors.WHITE : Colors.BLACK,
+            fontFamily: Fonts.Regular,
+          }}
           search
           renderDropdownIcon={() => (
             <MaterialIcons
@@ -174,14 +273,17 @@ const AddTransaction = props => {
             return selectedItem;
           }}
           rowTextForSelection={(item, index) => {
-            return <TextComponent text={item} style={{fontSize: Sizes.h5 }} />;
+            return <TextComponent text={item} style={{fontSize: Sizes.h5}} />;
           }}
           searchInputStyle={{
             borderBottomColor: Colors.LLGREY,
             borderBottomWidth: 1,
-            backgroundColor: theme ? Colors.BLACK: Colors.WHITE,
+            backgroundColor: theme ? Colors.BLACK : Colors.WHITE,
           }}
-          selectedRowTextStyle={{color: Colors.PRIMARY_COLOR,  fontFamily: Fonts.Regular}}
+          selectedRowTextStyle={{
+            color: Colors.PRIMARY_COLOR,
+            fontFamily: Fonts.Regular,
+          }}
           dropdownStyle={{
             borderRadius: 10,
             backgroundColor: theme ? Colors.BLACK : Colors.WHITE,
@@ -200,7 +302,13 @@ const AddTransaction = props => {
 
         <Button
           title={purpose ? 'Save' : 'Add'}
-          onPress={purpose ? onPressEditTransaction : onPressAddTransaction}
+          onPress={
+            purpose
+              ? onPressEditTransaction
+              : type == 'Income'
+              ? onPressAddIncome
+              : onPressAddExpense
+          }
           style={{marginTop: 40}}
         />
 
@@ -212,7 +320,7 @@ const AddTransaction = props => {
               marginTop: 10,
               borderColor: Colors.PRIMARY_COLOR,
               borderWidth: 1,
-              backgroundColor: Colors.WHITE
+              backgroundColor: Colors.WHITE,
             }}
             textStyle={{color: Colors.PRIMARY_COLOR}}
           />

@@ -8,7 +8,7 @@ const TextComponent = (props) => {
   const theme = useSelector(state => state.AppReducer.theme)
 
   return (
-    <Text style={[{color: theme ? Colors.WHITE : Colors.BLACK ,
+    <Text numberOfLines={props?.numberOfLines} style={[{color: theme ? Colors.WHITE : Colors.BLACK ,
     fontFamily: Fonts.Regular} , props?.style]}>{props?.text}</Text>
   )};
 

@@ -54,7 +54,9 @@ const Signup = () => {
 
        auth()
         .createUserWithEmailAndPassword(email, confirmPassword)
-        .then(() => {
+        .then((e) => {
+          const user = e.user;
+        user.updateProfile({displayName: name})
           dispatch(showAlert('Your account has been created !'));
           console.log('User account created !');
 
@@ -62,10 +64,9 @@ const Signup = () => {
             .collection('Users')
             .doc(auth().currentUser.uid)
             .set({
-              name: name,
-              email: email,
-              createdAt: firestore.Timestamp.fromDate(new Date()),
               userImg: null,
+              expenses : [],
+              income: []
             });
 
            navigation.navigate('Login');
@@ -74,12 +75,15 @@ const Signup = () => {
           if (error.code === 'auth/email-already-in-use') {
             dispatch(showAlert('That email address is already in use!'));
           }
-          if (error.code === 'auth/invalid-email') {
+          else if (error.code === 'auth/invalid-email') {
             dispatch(showAlert('That email address is invalid!'));
+          }else{
+            dispatch(showAlert('Network issue'))
+            console.error(error);
           }
-          console.error(error);
+          
         })
-        .finally(dispatch(hideLoading()));
+        .finally(() => dispatch(hideLoading()));
     }
   };
 

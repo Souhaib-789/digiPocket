@@ -23,6 +23,7 @@ const Input = props => {
       secureTextEntry={props?.secureTextEntry}
       keyboardType={props?.keyboardType}
       multiline={props?.multiline}
+      maxLength={props?.maxLength}
       numberOfLines={props?.numberOfLines}
       style={[styles.input , {    color: theme ? Colors.WHITE: Colors.BLACK
       }, {...props?.style}]}

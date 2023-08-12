@@ -1,90 +1,160 @@
-import React from 'react';
-import { StyleSheet,  View,  Image, ScrollView,  TouchableOpacity, FlatList} from 'react-native';
+import React, {useState, useCallback} from 'react';
+import {  StyleSheet, View,  Image,  ScrollView,  TouchableOpacity,  FlatList,  RefreshControl,} from 'react-native';
 import {Colors} from '../../config/Colors';
 import TextComponent from '../../components/TextComponent';
 import Alternate from '../../assets/alternate.jpg';
 import {Sizes} from '../../config/Sizes';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useNavigation} from '@react-navigation/native';
-import { ListEmptyComponent } from '../../components/ListEmptyComponent';
-import { useSelector } from 'react-redux';
-import { Fonts } from '../../config/Fonts';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {ListEmptyComponent} from '../../components/ListEmptyComponent';
+import {useDispatch, useSelector} from 'react-redux';
+import {Fonts} from '../../config/Fonts';
+import firestore from '@react-native-firebase/firestore';
+import { hideLoading, showAlert, showLoading, } from '../../redux/actions/AppAction';
+import moment from 'moment';
+import Icon from '../../components/Icon';
 
 const Home = () => {
   const navigation = useNavigation();
-  const theme = useSelector(state => state.AppReducer.theme)
+  const dispatch = useDispatch();
+  const theme = useSelector(state => state.AppReducer.theme);
+  const user = useSelector(state => state.AuthReducer.userInfo);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const renderListItem = ({item}) => {
+  const [recentTransactions , setrecentTransactions] = useState([])
+
+  const [incomeSum, setIncomeSum] = useState(0);
+  const [ExpenseSum, setExpenseSum] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+     Fetchdata();
+     }, [user])
+  );
+
+ 
+  const Fetchdata = async () => {
+    const usersCollectionRef = firestore().collection('Users');
+    try {
+      dispatch(showLoading());
+      const userDoc = await usersCollectionRef.doc(user?.uid).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+
+        //Calculating Income Sum
+        const incomeArray = userData.income;
+        const i_sum = calculateSum(incomeArray);
+        setIncomeSum(i_sum);
+
+        //Calculating Expense Sum
+        const expenseArray = userData.expenses;
+        const e_sum = calculateSum(expenseArray);
+        setExpenseSum(e_sum);
+
+        let copy_income = incomeArray.slice(-2)
+        let copy_expense = expenseArray.slice(-1)
+        let combine_copies = [...copy_income , ...copy_expense]
+        setrecentTransactions(combine_copies)
+      } else {
+        console.log('User document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching user expenses: ', error);
+      dispatch(showAlert('Something went wrong'));
+    } finally {
+      dispatch(hideLoading());
+    }
+  };
+
+  const calculateSum = array => {
+    const sum = array.reduce((total, curr) => total + Math.round(curr.amount) , 0);
+    return sum;
+  };
+
+  const renderListItem = ({item , index}) => {
     return (
-      <View style={[styles.list_item, {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
+      <View  style={[ styles.list_item,  {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
         <View style={styles.flex}>
-          <View style={[styles.icon_circle , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
-            <FontAwesome6
-              size={18}
-              color={Colors.PRIMARY_COLOR}
-              name="cart-shopping"
-            />
+          <View  style={[ styles.icon_circle,  {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
+           <Icon category={item?.category} color={Colors.PRIMARY_COLOR} />
           </View>
           <View style={{marginLeft: 10}}>
-            <TextComponent text={'Shopping'} style={[styles.list_text, {color: theme ? Colors.WHITE : Colors.BLACK}]} />
-            <TextComponent text={'05/03/23'} style={styles.sub_heading} />
+            <TextComponent text={item?.name ? item?.name : '--'}
+              style={[ styles.list_text,  {color: theme ? Colors.WHITE : Colors.BLACK}  ]}  />
+            <TextComponent text={moment(item?.date).format('DD/MM/YY')} style={styles.sub_heading} />
           </View>
         </View>
-        <TextComponent text={'+$200'} style={styles.expense_text} />
+        <TextComponent text={`${index == 2 ? '-' : '+' } Rs.${item?.amount}`} style={[styles.expense_text , {color : index == 2 ? Colors.RED : Colors.PRIMARY_COLOR}]} />
       </View>
     );
   };
 
   return (
-    <View style={[styles.container , {  backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
-      <ScrollView>
-        <View style={styles.sub_container} >
-
+    <View
+      style={[ styles.container,  {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
+      <ScrollView  refreshControl={  <RefreshControl
+            refreshing={refreshing}
+            onRefresh={Fetchdata}
+            colors={[Colors.PRIMARY_COLOR, Colors.BLACK]}
+          /> }>
+        <View style={styles.sub_container}>
           <View style={styles.flexA}>
             <View>
-              <TextComponent text={'Welcome Back ,'} style={[styles.sub_heading , {color: Colors.LLLLGREY , fontSize: Sizes.h7}]}              />
-              <TextComponent text={'Sarah Doe'} style={styles.heading} />
+              <TextComponent text={'Welcome Back ,'} style={[ styles.sub_heading,  {color: Colors.LLLLGREY, fontSize: Sizes.h7}]}  />
+              <TextComponent text={user?.displayName} style={styles.heading} />
             </View>
-            <TouchableOpacity  onPress={() => navigation.navigate('EditProfile')}>
-              <Image source={Alternate} style={styles.profile_image} resizeMode="contain" />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('EditProfile')}>
+              <Image source={Alternate}  style={styles.profile_image}  resizeMode="contain"  />
             </TouchableOpacity>
           </View>
 
           <View style={styles.main_heading}>
-            <TextComponent  text={'Total Balance'} style={[styles.box_span, {color: 'white'}]} />
-            <TextComponent text={'$ 5000.00'} style={[ styles.box_heading, { color: 'white', fontSize: 27}]} />
+            <TextComponent  text={'Total Balance'}  style={[styles.box_span, {color: 'white'}]}  />
+            <TextComponent  text={`Rs. ${Intl.NumberFormat('en-IN').format(incomeSum - ExpenseSum)}`}
+              style={[styles.box_heading, {color: 'white', fontSize: 27}]}
+            />
           </View>
         </View>
 
         <View style={styles.cards_view}>
-          <View style={[styles.box, {backgroundColor: theme? Colors.BLACK : Colors.WHITE}]}>
-            <MaterialCommunityIcons name="arrow-bottom-left"  color={Colors.PRIMARY_COLOR} size={25}  />
+          <View
+            style={[  styles.box, {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
+            <MaterialCommunityIcons name="arrow-bottom-left"  color={Colors.PRIMARY_COLOR} size={20}  />
             <View>
-              <TextComponent text={'Income'} style={[styles.box_span, {color : theme ? Colors.WHITE : Colors.BLACK}]} />
-              <TextComponent text={'$ 5000.00'} style={[styles.box_heading , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
+              <TextComponent text={'Income'} style={[ styles.box_span, {color: theme ? Colors.WHITE : Colors.BLACK} ]} />
+              <View style={styles.flex}>
+               <TextComponent text={'Rs. '} style={{color: theme ? Colors.WHITE : Colors.BLACK}} />
+              <TextComponent text={`${Intl.NumberFormat('en-IN').format(incomeSum)}`} style={[  styles.box_heading,  {color: theme ? Colors.WHITE : Colors.BLACK}]}  />
+              </View>
             </View>
           </View>
 
-          <View style={[styles.box, {backgroundColor: theme? Colors.BLACK : Colors.WHITE}]}>
-            <MaterialCommunityIcons name="arrow-top-right" color={Colors.PRIMARY_COLOR} size={25}  />
+          <View  style={[styles.box, {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
+            <MaterialCommunityIcons name="arrow-top-right"  color={Colors.PRIMARY_COLOR}  size={20}  />
             <View>
-              <TextComponent text={'Expense'} style={[styles.box_span , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
-              <TextComponent text={'$ 200.00'} style={[styles.box_heading , {color : theme ? Colors.WHITE : Colors.BLACK}]} />
+              <TextComponent  text={'Expense'} style={[  styles.box_span, {color: theme ? Colors.WHITE : Colors.BLACK} ]}  />
+              <View style={styles.flex}>
+               <TextComponent text={'Rs. '} style={{color: theme ? Colors.WHITE : Colors.BLACK}} />
+              <TextComponent text={`${Intl.NumberFormat('en-IN').format(ExpenseSum)}`} style={[  styles.box_heading,  {color: theme ? Colors.WHITE : Colors.BLACK}]}  />
+              </View>
             </View>
           </View>
         </View>
 
-        <View style={[styles.lower_container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
+        <View style={[ styles.lower_container, {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
           <View style={styles.flexA}>
-            <TextComponent text={'Recent Transactions'} style={[styles.headingx , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
-            <TouchableOpacity onPress={() => navigation.navigate('Transactions')} >
+            <TextComponent
+              text={'Recent Transactions'}
+              style={[ styles.headingx, {color: theme ? Colors.WHITE : Colors.BLACK}]}  />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Transactions')}>
               <TextComponent text={'See all '} style={styles.sub_heading} />
             </TouchableOpacity>
           </View>
 
           <FlatList
-            data={[1,2,3]}
+            data={recentTransactions}
             renderItem={renderListItem}
             keyExtractor={(item, index) => index.toString()}
             ListEmptyComponent={ListEmptyComponent}
@@ -108,8 +178,8 @@ const styles = StyleSheet.create({
   },
   lower_container: {
     padding: 20,
-     marginTop: 60
-    },
+    marginTop: 60,
+  },
   main_heading: {
     marginTop: 40,
     gap: 5,
@@ -121,12 +191,12 @@ const styles = StyleSheet.create({
   },
   cards_view: {
     position: 'absolute',
-   top: 200, 
-   marginHorizontal: 20, 
-     flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center'
-}, 
+    top: 200,
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   flex: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -144,19 +214,19 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: Sizes.h3,
     color: 'white',
-    fontFamily: Fonts.Medium
+    fontFamily: Fonts.Medium,
   },
   headingx: {
     color: Colors.BLACK,
     fontSize: Sizes.h4,
-fontFamily: Fonts.SemiBold
+    fontFamily: Fonts.SemiBold,
   },
   box: {
     backgroundColor: Colors.WHITE,
     elevation: 5,
     borderRadius: 10,
     paddingVertical: 25,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     width: '48%',
     gap: 7,
     marginHorizontal: 3,
@@ -166,12 +236,12 @@ fontFamily: Fonts.SemiBold
   box_span: {
     color: Colors.BLACK,
     fontSize: Sizes.h6,
-    fontFamily: Fonts.Regular
+    fontFamily: Fonts.Regular,
   },
   box_heading: {
     color: Colors.BLACK,
     fontSize: Sizes.h3,
-    fontFamily: Fonts.SemiBold
+    fontFamily: Fonts.SemiBold,
   },
   icon_circle: {
     backgroundColor: Colors.WHITE,
@@ -186,17 +256,17 @@ fontFamily: Fonts.SemiBold
   list_text: {
     color: Colors.BLACK,
     fontSize: Sizes.h5,
-    fontFamily: Fonts.Regular
+    fontFamily: Fonts.Regular,
   },
   expense_text: {
     color: Colors.PRIMARY_COLOR,
     fontSize: Sizes.h4,
-    fontFamily: Fonts.Regular
+    fontFamily: Fonts.Regular,
   },
   sub_heading: {
     color: Colors.GREY,
     fontSize: Sizes.h6,
-    fontFamily: Fonts.Regular
+    fontFamily: Fonts.Regular,
   },
   list_item: {
     justifyContent: 'space-between',

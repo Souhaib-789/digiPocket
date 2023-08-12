@@ -17,6 +17,7 @@ const EditProfile = () => {
   const [image, setimage] = useState(null);
   const navigation = useNavigation();
   const theme = useSelector(state => state.AppReducer.theme)
+  const user = useSelector(state => state.AuthReducer.userInfo)
 
   const openImagePicker = () => {
     ImageUploader(e => {
@@ -54,8 +55,8 @@ const EditProfile = () => {
             size={20}
           />
         </TouchableOpacity>
-        <TextComponent text={'M. Souhaib'} style={styles.sub_heading} />
-        <TextComponent text={'souhaib@gmail.com'} style={styles.span} />
+        <TextComponent text={user?.displayName} style={styles.sub_heading} />
+        <TextComponent text={user?.email} style={styles.span} />
       </View>
     </View>
   );
