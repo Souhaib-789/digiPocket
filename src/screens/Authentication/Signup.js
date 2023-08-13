@@ -56,7 +56,7 @@ const Signup = () => {
         .createUserWithEmailAndPassword(email, confirmPassword)
         .then((e) => {
           const user = e.user;
-        user.updateProfile({displayName: name})
+        user.updateProfile({displayName: name , photoURL: null})
           dispatch(showAlert('Your account has been created !'));
           console.log('User account created !');
 
@@ -66,7 +66,8 @@ const Signup = () => {
             .set({
               userImg: null,
               expenses : [],
-              income: []
+              income: [],
+              goals:[]
             });
 
            navigation.navigate('Login');

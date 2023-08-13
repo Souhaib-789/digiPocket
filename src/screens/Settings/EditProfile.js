@@ -9,16 +9,23 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ImageUploader from '../../components/ImageUploader';
 import {useNavigation} from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Fonts } from '../../config/Fonts';
+import { showAlert, showLoading } from '../../redux/actions/AppAction';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 
 const EditProfile = () => {
   const [image, setimage] = useState(null);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const theme = useSelector(state => state.AppReducer.theme)
   const user = useSelector(state => state.AuthReducer.userInfo)
+  const userID = useSelector(state => state.AuthReducer.userInfo?.uid)
 
+  console.log('----------------', user?.photoURL);
   const openImagePicker = () => {
     ImageUploader(e => {
       let image = e?.path?.split('/');
@@ -29,8 +36,81 @@ const EditProfile = () => {
         type: e?.mime,
       };
       setimage(imgObject);
+      uploadPhotoToStorage()
     });
   };
+
+//   const onPressSave = async () => {
+//     if (!image) {
+//         dispatch(showAlert('File Not supported!'))
+//     } else {
+//         dispatch(showLoading())
+//         const uploadUri = image ? image?.uri : null;
+//         let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+
+//         // Add timestamp to File Name
+//         const extension = filename.split('.').pop();
+//         const name = filename.split('.').slice(0, -1).join('.');
+//         let filenamex = name + Date.now() + '.' + extension;
+//         // console.log('============= filename ==================',filenamex)
+//         const storageRef = storage().ref(`photos/${filenamex}`);
+//         // console.log('=========== storageRef ==================',storageRef)
+//         await storageRef.putFile(uploadUri);
+
+//         try {
+//             const url = await storage().ref(`photos/${filenamex}`).getDownloadURL();
+//             dispatch(AlertAction.HideLoading())
+//             await firestore()
+//                 .collection('Users')
+//                 .doc(USER.uid)
+//                 .update({
+//                     userImg: url ? url : routeData?.img,
+//                     city: location ? location : routeData?.city,
+//                     phoneno: phone ? phone : routeData?.phone,
+//                 });
+//             dispatch(AlertAction.showAlert('Profile Updated Successfully!'))
+//             navigation.goBack();
+//         } catch (e) {
+//             console.log(e.message);
+//             dispatch(AlertAction.HideLoading())
+//             return null;
+//         }
+//     }
+// };
+
+const uploadPhotoToStorage = async () => {
+  // let filename = name + Date.now() + '.' + extension;
+  const storageRef = storage().ref(`photos/${userID}`);
+  try {
+    await storageRef.putFile(image?.uri);
+    const downloadUrl = await storageRef.getDownloadURL();
+    console.log(downloadUrl);
+  } catch (error) {
+    console.error('Error uploading photo: ', error);
+    return null;
+  }
+};
+
+
+
+
+
+
+const handleUpdateProfile = async () => {
+  try {
+    const user = auth().currentUser;
+    if (user) {
+      await user.updateProfile({
+        photoURL: image?.uri,
+      });
+      alert('Success', 'Profile updated successfully');
+    }
+  } catch (error) {
+    console.error('Error updating profile: ', error);
+    alert('Error', 'Failed to update profile');
+  }
+};
+
 
   return (
     <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>

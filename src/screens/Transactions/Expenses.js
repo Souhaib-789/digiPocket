@@ -4,7 +4,6 @@ import {Colors} from '../../config/Colors';
 import {Sizes} from '../../config/Sizes';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import TextComponent from '../../components/TextComponent';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import {ListEmptyComponent} from '../../components/ListEmptyComponent';

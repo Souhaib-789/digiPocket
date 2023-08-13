@@ -21,7 +21,34 @@ const Icon = props => {
           color={color}
           name="cart-shopping"
         />
-      ) : props?.category == 'Education' ? (
+      ) : props?.category == 'Clothing' ? (
+        <Ionicons
+          size={18}
+          color={color}
+          name="shirt"
+        />
+      )
+      : props?.category == 'Wedding' ? (
+        <MaterialCommunityIcons
+          size={18}
+          color={color}
+          name="ring"
+        />
+      ) : props?.category == 'Vehicle' ? (
+        <FontAwesome5
+          size={18}
+          color={color}
+          name="car"
+        />
+      )
+      : props?.category == 'Mobile Phone' ? (
+        <FontAwesome5
+          size={18}
+          color={color}
+          name="mobile"
+        />
+      )
+      : props?.category == 'Education' ? (
         <FontAwesome6
           size={18}
           color={color}

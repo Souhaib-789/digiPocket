@@ -70,14 +70,47 @@ const Income = () => {
     );
   };
 
-  const renderBackItem = ({item}) => {
+  const deleteIncome= async (index) => {
+    const usersCollectionRef = firestore().collection('Users');
+  
+    try {
+      dispatch(showLoading())
+      const userDoc = await usersCollectionRef.doc(userID).get();
+  
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        const incomeArray = userData.income || [];
+  
+        incomeArray.splice(index, 1);
+  
+        await usersCollectionRef.doc(userID).update({
+          income: incomeArray,
+        });
+  
+        console.log('Income deleted by index successfully!');
+        await dispatch(showAlert('Income deleted!'))
+        getUserIncome()
+      } else {
+        console.log('User document not found');
+        dispatch(showAlert('Something went wrong'))
+      }
+    } catch (error) {
+      console.error('Error deleting income by index: ', error);
+      dispatch(showAlert('Something went wrong'))
+    }finally{
+      dispatch(hideLoading())
+    }
+  };
+
+  const renderBackItem = ({item , index}) => {
     return (
       <View style={[styles.list_item, {justifyContent: 'flex-end', backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
         <View style={[styles.flex, {gap: 15, marginRight: 5}]}>
           <TouchableOpacity style={styles.hidden_button} onPress={()=> navigation.navigate('AddTransaction', {item: item , purpose : 'Edit', type: 'Income'})}>
             <Feather size={20} color={theme ? Colors.WHITE : Colors.WHITE} name="edit" />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.hidden_buttonx , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
+          <TouchableOpacity onPress={()=> deleteIncome(index)}
+          style={[styles.hidden_buttonx , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
             <AntDesign size={20} color={Colors.PRIMARY_COLOR} name="delete" />
           </TouchableOpacity>
         </View>
@@ -95,8 +128,8 @@ const Income = () => {
 
   return (
     <View style={[styles.container , { backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
-              <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onScrollRefreshing} colors={[Colors.PRIMARY_COLOR , Colors.BLACK]} />} showsVerticalScrollIndicator={false}>
-
+       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onScrollRefreshing} colors={[Colors.PRIMARY_COLOR , Colors.BLACK]} />} showsVerticalScrollIndicator={false}>
+        
       <SwipeListView
         style={{marginTop: 7}}
         data={myincomes}

@@ -5,6 +5,7 @@ import TextComponent from './TextComponent';
 import * as Progress from 'react-native-progress';
 import { useSelector } from 'react-redux';
 import { Fonts } from '../config/Fonts';
+import Spinner from 'react-native-spinkit';
 
 export const Loader = (props) => {
   const theme = useSelector(state => state.AppReducer.theme)
@@ -16,7 +17,14 @@ export const Loader = (props) => {
     visible={props?.visible} >
     <View style={styles.container} >
 
-      <View style={[styles.sub_container , {     backgroundColor: theme ? Colors.BLACK : Colors.WHITE,
+      <Spinner
+      isVisible={true}
+      color={Colors.PRIMARY_COLOR}
+      size={120}
+      type={'Pulse'}
+      />
+
+      {/* <View style={[styles.sub_container , {     backgroundColor: theme ? Colors.BLACK : Colors.WHITE,
 }]}>
       <TextComponent text={'Please Wait ...'} style={[styles.text , {    color: theme ? Colors.WHITE: Colors.PRIMARY_COLOR,
 }]} />
@@ -30,7 +38,7 @@ export const Loader = (props) => {
         indeterminate={true}
         borderWidth={1}
       />
-      </View>
+      </View> */}
     </View>
     </Modal>
   );

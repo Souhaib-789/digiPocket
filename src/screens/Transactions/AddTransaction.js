@@ -27,14 +27,16 @@ const AddTransaction = props => {
   const routeData = props?.route?.params?.item;
   const Transtype = props?.route?.params?.type;
   const purpose = props?.route?.params?.purpose;
+
   const theme = useSelector(state => state.AppReducer.theme);
   const userID = useSelector(state => state.AuthReducer.userInfo.uid);
   const dispatch = useDispatch();
   const navigation = useNavigation();
+
   const [name, setname] = useState(routeData?.name);
   const [amount, setamount] = useState(routeData?.amount);
   const [type, settype] = useState('Expense');
-  const [category, setcategory] = useState(null);
+  const [category, setcategory] = useState(routeData?.category);
   const [TransactionDate, setTransactionDate] = useState(routeData?.date);
   const [description, setdescription] = useState(routeData?.description);
   const transactionid = Math.random().toString().substring(2, 8);
@@ -42,7 +44,7 @@ const AddTransaction = props => {
   const [openModal, setOpenModal] = useState(false);
   const [Value, setValue] = useState(Transtype == 'Income' ? true : false);
   const [openSuccesModal, setopenSuccesModal] = useState(false);
-
+  
   const IncomeCategories = ['Salary', 'Awards', 'Profit', 'Grants', 'Refunds'];
   const ExpenseCategories = [
     'Food',
@@ -135,7 +137,92 @@ const AddTransaction = props => {
     }
   };
 
-  const onPressEditTransaction = () => {};
+  const onPressUpdateTransaction = async () => {
+    const usersCollectionRef = firestore().collection('Users');
+    try {
+      dispatch(showLoading())
+      const userDoc = await usersCollectionRef.doc(userID).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        let expensesArray = userData.expenses || [];
+  
+        // Find the index of the expense to update
+        const expenseIndex = expensesArray.findIndex(e => e.id == routeData?.id);
+        if (expenseIndex !== -1) {
+          // Update the specific expense object
+          expensesArray[expenseIndex] = {
+            id: routeData?.id,
+            name: name,
+            amount: amount,
+            date: TransactionDate,
+            category: category ,
+            description: description ,
+          };
+  
+          // Update the entire "expenses" array in Firestore
+          await usersCollectionRef.doc(userID).update({
+            expenses: expensesArray,
+          });
+        }
+         else {
+          console.log('Expense not found in the array');
+          dispatch(hideLoading())
+        }
+      } else {
+        console.log('User document not found');
+        dispatch(showAlert('something went wrong'));
+      }
+    } catch (error) {
+      console.error('Error updating expense: ', error);
+    } finally {
+      dispatch(hideLoading())
+      navigation.goBack()
+    }
+  };
+  
+  const onPressUpdateIncome = async () => {
+    const usersCollectionRef = firestore().collection('Users');
+    try {
+      dispatch(showLoading())
+      const userDoc = await usersCollectionRef.doc(userID).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        let incomeArray = userData.income || [];
+  
+        // Find the index of the income to update
+        const incomeIndex = incomeArray.findIndex(e => e.id == routeData?.id);
+        if (incomeIndex !== -1) {
+          // Update the specific income object
+          incomeArray[incomeIndex] = {
+            id: routeData?.id,
+            name: name,
+            amount: amount,
+            date: TransactionDate,
+            category: category ,
+            description: description ,
+          };
+  
+          // Update the entire "incomes" array in Firestore
+          await usersCollectionRef.doc(userID).update({
+            income: incomeArray,
+          });
+        }
+         else {
+          console.log('Income not found in the array');
+          dispatch(hideLoading())
+        }
+      }
+       else {
+        console.log('User document not found');
+        dispatch(showAlert('something went wrong'));
+      }
+    } catch (error) {
+      console.error('Error updating income: ', error);
+    } 
+    finally {
+      dispatch(hideLoading())
+      navigation.goBack()
+    }}
 
   return (
     <View
@@ -230,14 +317,10 @@ const AddTransaction = props => {
 
         <Input
           label={'Date'}
-          value={
-            TransactionDate && moment(TransactionDate).format('DD MMM YYYY')
-          }
+          value={ TransactionDate && moment(TransactionDate).format('DD MMM YYYY') }
           onChangeText={e => setTransactionDate(e)}
           placeholder={'select date'}
-          rightIcon={
-            <AntDesign name="calendar" size={20} color={Colors.GREY} />
-          }
+          rightIcon={ <AntDesign name="calendar" size={20} color={Colors.GREY} /> }
           editable={false}
           onPressRightIcon={() => setOpenModal(true)}
         />
@@ -303,8 +386,7 @@ const AddTransaction = props => {
         <Button
           title={purpose ? 'Save' : 'Add'}
           onPress={
-            purpose
-              ? onPressEditTransaction
+            purpose ? ( Transtype == 'Income' ? onPressUpdateIncome : onPressUpdateTransaction)
               : type == 'Income'
               ? onPressAddIncome
               : onPressAddExpense

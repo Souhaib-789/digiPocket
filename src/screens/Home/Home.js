@@ -20,11 +20,13 @@ const Home = () => {
   const theme = useSelector(state => state.AppReducer.theme);
   const user = useSelector(state => state.AuthReducer.userInfo);
   const [refreshing, setRefreshing] = useState(false);
+  const IncomeCategories = ['Salary', 'Awards', 'Profit', 'Grants', 'Refunds'];
 
   const [recentTransactions , setrecentTransactions] = useState([])
 
   const [incomeSum, setIncomeSum] = useState(0);
   const [ExpenseSum, setExpenseSum] = useState(0);
+  const currentBalance = incomeSum - ExpenseSum;
 
   useFocusEffect(
     useCallback(() => {
@@ -55,12 +57,16 @@ const Home = () => {
         let copy_expense = expenseArray.slice(-1)
         let combine_copies = [...copy_income , ...copy_expense]
         setrecentTransactions(combine_copies)
+        console.log('Data loaded successfully');
       } else {
         console.log('User document not found');
+        setrecentTransactions([])
+        setIncomeSum(0)
+        setExpenseSum(0)
       }
     } catch (error) {
       console.error('Error fetching user expenses: ', error);
-      dispatch(showAlert('Something went wrong'));
+      dispatch(showAlert('Poor internet connection!'))
     } finally {
       dispatch(hideLoading());
     }
@@ -72,6 +78,7 @@ const Home = () => {
   };
 
   const renderListItem = ({item , index}) => {
+    let checkIsIncome = IncomeCategories.includes(item?.category)
     return (
       <View  style={[ styles.list_item,  {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
         <View style={styles.flex}>
@@ -84,7 +91,7 @@ const Home = () => {
             <TextComponent text={moment(item?.date).format('DD/MM/YY')} style={styles.sub_heading} />
           </View>
         </View>
-        <TextComponent text={`${index == 2 ? '-' : '+' } Rs.${item?.amount}`} style={[styles.expense_text , {color : index == 2 ? Colors.RED : Colors.PRIMARY_COLOR}]} />
+        <TextComponent text={`${checkIsIncome ? '+' : '-' } Rs.${item?.amount}`} style={[styles.expense_text , {color : checkIsIncome ? Colors.PRIMARY_COLOR : Colors.RED}]} />
       </View>
     );
   };
@@ -110,9 +117,9 @@ const Home = () => {
           </View>
 
           <View style={styles.main_heading}>
-            <TextComponent  text={'Total Balance'}  style={[styles.box_span, {color: 'white'}]}  />
-            <TextComponent  text={`Rs. ${Intl.NumberFormat('en-IN').format(incomeSum - ExpenseSum)}`}
-              style={[styles.box_heading, {color: 'white', fontSize: 27}]}
+            <TextComponent  text={'Current Balance'}  style={[styles.box_span, {color: 'white'}]}  />
+            <TextComponent  text={`Rs. ${Intl.NumberFormat('en-IN').format(currentBalance)}`}
+              style={[styles.box_heading, {color: currentBalance < 0 ? Colors.RED : 'white', fontSize: 27}]}
             />
           </View>
         </View>

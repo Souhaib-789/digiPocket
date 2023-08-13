@@ -1,31 +1,87 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, FlatList, ScrollView, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import {StyleSheet, View,  FlatList, ScrollView,ImageBackground, TouchableOpacity , RefreshControl} from 'react-native';
 import {Colors} from '../../config/Colors';
 import {Sizes} from '../../config/Sizes';
 import TextComponent from '../../components/TextComponent';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Switch} from 'react-native-switch';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import * as Progress from 'react-native-progress';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation , useFocusEffect} from '@react-navigation/native';
 import { ListEmptyComponent } from '../../components/ListEmptyComponent';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Fonts } from '../../config/Fonts';
+import firestore from '@react-native-firebase/firestore';
+import { hideLoading, showAlert, showLoading } from '../../redux/actions/AppAction';
+import Icon from '../../components/Icon';
 
 const Goals = () => {
-  const [Value, setValue] = useState(false);
+
   const navigation = useNavigation()
+  const dispatch = useDispatch();
+
   const theme = useSelector(state => state.AppReducer.theme)
+  const userID = useSelector(state => state.AuthReducer.userInfo.uid);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [allGoalsLength, setallGoalsLength] = useState(0);
+  const [Value, setValue] = useState(false);
+  const [currGoals, setcurrGoals] = useState([]);
+  const [achievedGoals, setachievedGoals] = useState([]);
+
+  
+
+  useFocusEffect(
+    useCallback(() => {
+     getAllGoals();
+     }, [userID])
+  );
+
+  const getAllGoals = async () => {
+    const usersCollectionRef = firestore().collection('Users');
+    try {
+      dispatch(showLoading());
+      const userDoc = await usersCollectionRef.doc(userID).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        const goalsArray = userData.goals || [];
+        setallGoalsLength(goalsArray?.length)
+
+        let achievedGoalsArray = goalsArray.filter(item => item?.status == 'achieved')
+        setachievedGoals(achievedGoalsArray)
+        
+        let currGoalsArray = goalsArray.filter(item => item?.status == 'unachieved')
+        setcurrGoals(currGoalsArray);
+      } else {
+        console.log('User document not found');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching user expenses: ', error);
+      dispatch(showAlert('Something went wrong'))
+      return [];
+    }
+    finally{
+      dispatch(hideLoading())
+  }
+  };
 
   const renderListItem = ({item}) => {
+
+    const normalizedValue = item?.collected_amount / item?.amount; 
+    const scaledValue = 0.1 + normalizedValue * (0.9 - 0.1); 
+
     return (
-      <View style={styles.list_item}>
+      <TouchableOpacity style={styles.list_item} onPress={()=> navigation.navigate('AddGoal' , {item: item })}>
         <View style={styles.flex}>
-          <FontAwesome6 size={18} color={theme ? Colors.WHITE : Colors.BLACK} name="cart-shopping" />
-          <View style={{gap: 8}}>
-            <TextComponent text={'Car'} style={[styles.list_text , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
+          <Icon category={item?.category} color={Colors.BLACK} />
+          <View style={{gap: 8 , width: '88%'}}>
+            <View style={styles.flexA}>
+            <TextComponent text={scaledValue} style={[styles.list_text , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
+            <TextComponent text={`Rs.${Intl.NumberFormat('en-US').format(item?.amount)}`} style={[styles.expense_text , {color : theme ? Colors.WHITE : Colors.BLACK  }]} />
+            </View>
+
             <Progress.Bar
-              progress={0.8}
+              progress={item?.collected_amount ? scaledValue.toFixed(1) : 0}
               height={5}
               width={200}
               animated={true}
@@ -35,8 +91,37 @@ const Goals = () => {
             />
           </View>
         </View>
-        <TextComponent text={'$200'} style={[styles.expense_text , {color : theme ? Colors.WHITE : Colors.BLACK }]} />
-      </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderAchievedListItem = ({item , index}) => {
+
+    const scaledValue = (item?.amount - item?.amount / 2 ) / (item?.amount - 0) * (0.1 - 0.9) + 0.1;
+
+    return (
+      <TouchableOpacity style={styles.list_item} onPress={()=> navigation.navigate('AddGoal' , {item: item ,index: index, Type : 'achieved'})}>
+        <View style={styles.flex}>
+          <Icon category={item?.category} color={Colors.BLACK} />
+          <View style={{gap: 8 , width: '88%'}}>
+            <View style={styles.flexA}>
+            <TextComponent text={item?.name} style={[styles.list_text , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
+            <TextComponent text={`Rs.${Intl.NumberFormat('en-US').format(item?.amount)}`} style={[styles.expense_text , {color : theme ? Colors.WHITE : Colors.BLACK  }]} />
+            </View>
+
+          
+            <Progress.Bar
+              progress={1}
+              height={5}
+              width={200}
+              animated={true}
+              useNativeDriver={true}
+              color={Colors.PRIMARY_COLOR}
+              borderWidth={1}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -45,7 +130,7 @@ const Goals = () => {
 
       <TextComponent text={'Goals'} style={styles.heading} />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getAllGoals} colors={[Colors.PRIMARY_COLOR , Colors.BLACK]} />}>
         <View style={[styles.box, {backgroundColor : theme ? Colors.BLACK : Colors.WHITE}]}>
           <Ionicons
             name="checkmark-done-circle"
@@ -54,7 +139,7 @@ const Goals = () => {
           />
           <View>
             <TextComponent text={'Goals Achieved'} style={[styles.box_span , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
-            <TextComponent text={'0/1'} style={[styles.box_heading , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
+            <TextComponent text={`${achievedGoals?.length}/${allGoalsLength}`} style={[styles.box_heading , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
           </View>
         </View>
 
@@ -80,7 +165,7 @@ const Goals = () => {
 
         <TextComponent text={'Current Goals'} style={[styles.sub_heading, { color: theme ? Colors.WHITE: Colors.BLACK}]} />
         <FlatList
-          data={[1, 2]}
+          data={currGoals}
           renderItem={renderListItem}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
@@ -91,8 +176,8 @@ const Goals = () => {
           <>
             <TextComponent text={'Achieved Goals'} style={[styles.sub_heading, { color: theme ? Colors.WHITE: Colors.BLACK}]} />
             <FlatList
-              data={[1, 2]}
-              renderItem={renderListItem}
+              data={achievedGoals}
+              renderItem={renderAchievedListItem}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
               ListEmptyComponent={ListEmptyComponent}
@@ -104,6 +189,7 @@ const Goals = () => {
       <TouchableOpacity style={styles.add_button} onPress={()=> navigation.navigate('AddGoal')}>
   <Ionicons name={'add'} color={Colors.WHITE} size={25} />
 </TouchableOpacity>
+
     </View>
   );
 };
@@ -142,6 +228,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 15,
     alignItems: 'center',
+  },
+  flexA:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   list_text: {
     fontSize: Sizes.h5,
