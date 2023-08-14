@@ -74,7 +74,7 @@ const AddTransaction = props => {
         id: transactionid,
         name: name,
         amount: amount,
-        date: TransactionDate,
+        transaction_date: TransactionDate,
         category: category,
         description: description ? description : null,
       };
@@ -113,7 +113,7 @@ const AddTransaction = props => {
         id: transactionid,
         name: name,
         amount: amount,
-        date: TransactionDate,
+        transaction_date: TransactionDate,
         category: category,
         description: description ? description : null,
       };

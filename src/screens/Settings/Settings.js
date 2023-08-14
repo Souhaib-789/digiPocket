@@ -20,11 +20,13 @@ import { setTheme, showAlert, showLoading } from '../../redux/actions/AppAction'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Logout } from '../../redux/actions/AuthActions';
 import { Fonts } from '../../config/Fonts';
+import auth from '@react-native-firebase/auth';
 
 const Settings = () => {
   const navigation = useNavigation();
   const theme = useSelector(state => state.AppReducer.theme)
   const user = useSelector(state => state.AuthReducer.userInfo)
+  const userProfile = auth().currentUser.photoURL;
 
   const [Value, setValue] = useState(theme);
   const dispatch = useDispatch()
@@ -92,7 +94,7 @@ const Settings = () => {
         <TouchableOpacity onPress={()=> navigation.navigate('EditProfile')}
         style={[styles.flex, {justifyContent: 'space-between'}]}>
           <View style={styles.flex}>
-            <Image source={Alternate} style={styles.image} />
+            <Image source={userProfile ? {uri : userProfile} :Alternate} style={styles.image} />
             <View>
               <TextComponent text={user?.displayName} style={styles.sub_heading} />
               <TextComponent text={'Edit Profile'} style={styles.span} />

@@ -83,6 +83,8 @@ const deleteExpense= async (index) => {
 };
 
   const renderListItem = ({item}) => {
+    const date = moment.unix(item.transaction_date?.seconds);
+
     return (
       <View
         style={[
@@ -103,7 +105,7 @@ const deleteExpense= async (index) => {
               ]}
             />
             <TextComponent
-              text={moment(item?.date).format('DD/MM/YY')}
+              text={date.format('DD/MMM/YY')}
               style={styles.sub_heading}
             />
           </View>

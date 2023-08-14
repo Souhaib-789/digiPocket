@@ -13,12 +13,14 @@ import firestore from '@react-native-firebase/firestore';
 import { hideLoading, showAlert, showLoading, } from '../../redux/actions/AppAction';
 import moment from 'moment';
 import Icon from '../../components/Icon';
+import auth from '@react-native-firebase/auth';
 
 const Home = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const theme = useSelector(state => state.AppReducer.theme);
   const user = useSelector(state => state.AuthReducer.userInfo);
+  const userProfile = auth().currentUser.photoURL;
   const [refreshing, setRefreshing] = useState(false);
   const IncomeCategories = ['Salary', 'Awards', 'Profit', 'Grants', 'Refunds'];
 
@@ -65,7 +67,7 @@ const Home = () => {
         setExpenseSum(0)
       }
     } catch (error) {
-      console.error('Error fetching user expenses: ', error);
+      console.error('Error fetching data : =====>>  ', error);
       dispatch(showAlert('Poor internet connection!'))
     } finally {
       dispatch(hideLoading());
@@ -79,6 +81,8 @@ const Home = () => {
 
   const renderListItem = ({item , index}) => {
     let checkIsIncome = IncomeCategories.includes(item?.category)
+    const date = moment.unix(item?.transaction_date?.seconds);
+
     return (
       <View  style={[ styles.list_item,  {backgroundColor: theme ? Colors.BLACK : Colors.WHITE} ]}>
         <View style={styles.flex}>
@@ -88,7 +92,7 @@ const Home = () => {
           <View style={{marginLeft: 10}}>
             <TextComponent text={item?.name ? item?.name : '--'}
               style={[ styles.list_text,  {color: theme ? Colors.WHITE : Colors.BLACK}  ]}  />
-            <TextComponent text={moment(item?.date).format('DD/MM/YY')} style={styles.sub_heading} />
+            <TextComponent text={date.format('DD/MM/YY')} style={styles.sub_heading} />
           </View>
         </View>
         <TextComponent text={`${checkIsIncome ? '+' : '-' } Rs.${item?.amount}`} style={[styles.expense_text , {color : checkIsIncome ? Colors.PRIMARY_COLOR : Colors.RED}]} />
@@ -112,7 +116,7 @@ const Home = () => {
             </View>
             <TouchableOpacity
               onPress={() => navigation.navigate('EditProfile')}>
-              <Image source={Alternate}  style={styles.profile_image}  resizeMode="contain"  />
+              <Image source={userProfile ? {uri : userProfile }: Alternate}  style={styles.profile_image}  resizeMode="contain"  />
             </TouchableOpacity>
           </View>
 

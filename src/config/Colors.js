@@ -14,10 +14,13 @@ export const Colors = {
     RGBA3: 'rgba(0,0,0,0.7)',
     GREY: 'grey',
     RED: '#FF0000',
-    GREEN: '#008000',
-    YELLOW: '#ffef00',
-    ORANGE: '#ff8f00',
+    GREEN: '#59E817',
+    DGREEN : '#008000',
+    YELLOW: '#FFD801',
+    ORANGE: '#FF6700',
     PINK: '#ff0090',
-    PURPLE: '#8b008b',
-    BROWN: '#d2691e'
+    PURPLE: '#842DCE',
+    BROWN: '#8A4117',
+    LBLUE: '#43C6DB',
+    PEACH : '#FED8B1'
 }

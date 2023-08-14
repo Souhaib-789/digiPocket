@@ -1,19 +1,18 @@
-import React, {useState} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Colors} from '../../config/Colors';
+import React, { useState } from 'react';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../config/Colors';
 import Alternate from '../../assets/alternate.jpg';
 import Bubbles from '../../assets/bubbles.png';
 import TextComponent from '../../components/TextComponent';
-import {Sizes} from '../../config/Sizes';
+import { Sizes } from '../../config/Sizes';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ImageUploader from '../../components/ImageUploader';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Fonts } from '../../config/Fonts';
-import { showAlert, showLoading } from '../../redux/actions/AppAction';
+import { hideLoading, showAlert, showLoading } from '../../redux/actions/AppAction';
 import storage from '@react-native-firebase/storage';
-import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 
@@ -21,11 +20,11 @@ const EditProfile = () => {
   const [image, setimage] = useState(null);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const userProfile = auth().currentUser.photoURL;
+
   const theme = useSelector(state => state.AppReducer.theme)
   const user = useSelector(state => state.AuthReducer.userInfo)
-  const userID = useSelector(state => state.AuthReducer.userInfo?.uid)
 
-  console.log('----------------', user?.photoURL);
   const openImagePicker = () => {
     ImageUploader(e => {
       let image = e?.path?.split('/');
@@ -40,82 +39,52 @@ const EditProfile = () => {
     });
   };
 
-//   const onPressSave = async () => {
-//     if (!image) {
-//         dispatch(showAlert('File Not supported!'))
-//     } else {
-//         dispatch(showLoading())
-//         const uploadUri = image ? image?.uri : null;
-//         let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+  const uploadPhotoToStorage = async () => {
+    let uploadUri = image ? image?.uri : null;
+    let filename = uploadUri?.substring(uploadUri.lastIndexOf('/') + 1);
 
-//         // Add timestamp to File Name
-//         const extension = filename.split('.').pop();
-//         const name = filename.split('.').slice(0, -1).join('.');
-//         let filenamex = name + Date.now() + '.' + extension;
-//         // console.log('============= filename ==================',filenamex)
-//         const storageRef = storage().ref(`photos/${filenamex}`);
-//         // console.log('=========== storageRef ==================',storageRef)
-//         await storageRef.putFile(uploadUri);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    let filenamex = name + Date.now() + '.' + extension;
 
-//         try {
-//             const url = await storage().ref(`photos/${filenamex}`).getDownloadURL();
-//             dispatch(AlertAction.HideLoading())
-//             await firestore()
-//                 .collection('Users')
-//                 .doc(USER.uid)
-//                 .update({
-//                     userImg: url ? url : routeData?.img,
-//                     city: location ? location : routeData?.city,
-//                     phoneno: phone ? phone : routeData?.phone,
-//                 });
-//             dispatch(AlertAction.showAlert('Profile Updated Successfully!'))
-//             navigation.goBack();
-//         } catch (e) {
-//             console.log(e.message);
-//             dispatch(AlertAction.HideLoading())
-//             return null;
-//         }
-//     }
-// };
+    // const filenamex = Date.now() + '_' + user?.uid + '.jpg';
 
-const uploadPhotoToStorage = async () => {
-  // let filename = name + Date.now() + '.' + extension;
-  const storageRef = storage().ref(`photos/${userID}`);
-  try {
-    await storageRef.putFile(image?.uri);
-    const downloadUrl = await storageRef.getDownloadURL();
-    console.log(downloadUrl);
-  } catch (error) {
-    console.error('Error uploading photo: ', error);
-    return null;
-  }
-};
-
-
-
-
-
-
-const handleUpdateProfile = async () => {
-  try {
-    const user = auth().currentUser;
-    if (user) {
-      await user.updateProfile({
-        photoURL: image?.uri,
-      });
-      alert('Success', 'Profile updated successfully');
+    const storageRef = storage().ref(`photos/${filenamex}`);
+    try {
+      dispatch(showLoading())
+      await storageRef.putFile(uploadUri);
+      const downloadUrl = await storageRef.getDownloadURL();
+      handleUpdateProfileURL(downloadUrl)
+    } catch (error) {
+      console.error('Error uploading photo: ', error);
+      dispatch(hideLoading())
+      return null;
     }
-  } catch (error) {
-    console.error('Error updating profile: ', error);
-    alert('Error', 'Failed to update profile');
-  }
-};
+  };
+
+  const handleUpdateProfileURL = async (url) => {
+    try {
+      const user = auth().currentUser;
+      if (user) {
+        await user.updateProfile({
+          photoURL: url,
+        });
+        dispatch(showAlert('Profile Photo Updated !'))
+      }
+    } catch (error) {
+      console.error('Error updating profile: ', error);
+      dispatch(showAlert('Something went wrong'))
+    } finally {
+      dispatch(hideLoading())
+      navigation.goBack()
+    }
+  };
 
 
   return (
-    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
+    <View style={[styles.container, { backgroundColor: theme ? Colors.BLACK : Colors.WHITE }]}>
       <View style={styles.flex}>
-        <TouchableOpacity onPress={()=> navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntDesign size={23} color={theme ? Colors.WHITE : Colors.BLACK} name="arrowleft" />
         </TouchableOpacity>
         <TextComponent text={'Edit Profile'} style={styles.heading} />
@@ -124,11 +93,11 @@ const handleUpdateProfile = async () => {
 
       <View style={styles.sub_container}>
         <Image
-          source={image?.uri ? {uri: image?.uri} : Alternate}
+          source={image?.uri ? { uri: image?.uri } : userProfile ? {uri : userProfile } : Alternate}
           style={styles.image}
         />
-        <TouchableOpacity style={[styles.pick_icon , 
-    {backgroundColor: theme ? Colors.BLACK : Colors.WHITE , shadowColor: theme ? Colors.LLGREY : Colors.BLACK}]} onPress={openImagePicker}>
+        <TouchableOpacity style={[styles.pick_icon,
+        { backgroundColor: theme ? Colors.BLACK : Colors.WHITE, shadowColor: theme ? Colors.LLGREY : Colors.BLACK }]} onPress={openImagePicker}>
           <Ionicons
             name="camera-outline"
             color={Colors.PRIMARY_COLOR}

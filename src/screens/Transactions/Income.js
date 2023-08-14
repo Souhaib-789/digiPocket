@@ -52,6 +52,8 @@ const Income = () => {
   };
 
   const renderListItem = ({item}) => {
+    const date = moment.unix(item?.transaction_date?.seconds);
+
     return (
       <View style={[styles.list_item , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
         <View style={[styles.flex, { width: '67%'}]}>
@@ -60,7 +62,7 @@ const Income = () => {
           </View>
           <View style={{marginLeft: 10,  width: '72%' , }}>
             <TextComponent text={item?.name} numberOfLines={1}  style={[styles.list_text, {  color: theme ? Colors.WHITE : Colors.BLACK}]} />
-            <TextComponent text={moment(item?.date).format('DD/MM/YY')} style={styles.sub_heading} />
+            <TextComponent text={date.format('DD/MM/YY')} style={styles.sub_heading} />
           </View>
         </View>
         <View style={{ alignItems: 'flex-end',  width: '35%'}}>
