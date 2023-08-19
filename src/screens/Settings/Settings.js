@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -6,14 +6,15 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
-import {Colors} from '../../config/Colors';
+import { Colors } from '../../config/Colors';
 import TextComponent from '../../components/TextComponent';
-import {Sizes} from '../../config/Sizes';
+import { Sizes } from '../../config/Sizes';
 import Feather from 'react-native-vector-icons/Feather';
-import {Switch} from 'react-native-switch';
+import { Switch } from 'react-native-switch';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Alternate from '../../assets/alternate.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme, showAlert, showLoading } from '../../redux/actions/AppAction';
@@ -26,10 +27,20 @@ const Settings = () => {
   const navigation = useNavigation();
   const theme = useSelector(state => state.AppReducer.theme)
   const user = useSelector(state => state.AuthReducer.userInfo)
-  const userProfile = auth().currentUser.photoURL;
-
+  const [userProfile, setuserProfile] = useState()
   const [Value, setValue] = useState(theme);
+  const [refreshing, setRefreshing] = useState(false);
+
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    SetUserProfileImage()
+  }, [])
+
+  const SetUserProfileImage = () => {
+    let img = auth().currentUser.photoURL;
+    setuserProfile(img)
+  }
 
   const options = [
     {
@@ -52,49 +63,57 @@ const Settings = () => {
       icon: <MaterialIcons name={'logout'} color={Colors.RED} size={20} />,
       name: 'Logout',
       dZ: true,
-      onPress:  () => {
+      onPress: () => {
         try {
-            dispatch(Logout())
-             AsyncStorage.clear();
+          dispatch(Logout())
+          AsyncStorage.multiRemove(['@token', '@user']);
           dispatch(showAlert('Logged out!'))
         } catch (e) {
-            console.log(e);
+          console.log(e);
         }
-    }
+      }
     },
   ];
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity style={styles.option} onPress={item?.onPress}>
         <View style={styles.flex}>
           {item?.icon}
-          <TextComponent text={item?.name} style={[styles.text , {color: item?.dZ ? Colors.RED : theme ? Colors.WHITE : Colors.BLACK}]} />
+          <TextComponent text={item?.name} style={[styles.text, { color: item?.dZ ? Colors.RED : theme ? Colors.WHITE : Colors.BLACK }]} />
         </View>
         <View style={styles.flex}>
-        {item?.extraData && <TextComponent text={item?.extraData} style={styles.textx} /> } 
-        {!item?.dZ ? <MaterialIcons name="arrow-forward-ios" color={Colors.GREY} size={15} /> : null }
+          {item?.extraData && <TextComponent text={item?.extraData} style={styles.textx} />}
+          {!item?.dZ ? <MaterialIcons name="arrow-forward-ios" color={Colors.GREY} size={15} /> : null}
         </View>
       </TouchableOpacity>
     );
   };
 
- 
-  const onChangeTheme = (e) =>  {
-  setValue(e);
-  dispatch(setTheme(e))
+  const onChangeTheme = async (e) => {
+    try {
+      await AsyncStorage.setItem('@theme',JSON.stringify(e))
+      setValue(e);
+      dispatch(setTheme(e))
+    } catch (error) {
+      console.error('Error ', error);
+    }
   }
 
   return (
-    <View style={[styles.container , {backgroundColor: theme ? Colors.BLACK : Colors.WHITE}]}>
-      
-        <TextComponent text={'Settings'} style={[styles.heading , {color: theme ? Colors.WHITE : Colors.BLACK }]} />
+    <View style={[styles.container, { backgroundColor: theme ? Colors.BLACK : Colors.WHITE }]}>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <TouchableOpacity onPress={()=> navigation.navigate('EditProfile')}
-        style={[styles.flex, {justifyContent: 'space-between'}]}>
+      <TextComponent text={'Settings'} style={[styles.heading, { color: theme ? Colors.WHITE : Colors.BLACK }]} />
+
+      <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl
+        refreshing={refreshing}
+        onRefresh={SetUserProfileImage}
+        colors={[Colors.PRIMARY_COLOR, Colors.BLACK]}
+      />}>
+        <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}
+          style={[styles.flex, { justifyContent: 'space-between' }]}>
           <View style={styles.flex}>
-            <Image source={userProfile ? {uri : userProfile} :Alternate} style={styles.image} />
+            <Image source={userProfile ? { uri: userProfile } : Alternate} style={styles.image} />
             <View>
               <TextComponent text={user?.displayName} style={styles.sub_heading} />
               <TextComponent text={'Edit Profile'} style={styles.span} />
@@ -110,12 +129,12 @@ const Settings = () => {
 
         <TextComponent
           text={'Theme'}
-          style={[styles.text, {marginTop: 30, marginBottom: 10}]}
+          style={[styles.text, { marginTop: 30, marginBottom: 10 }]}
         />
-        <View style={[styles.flex, {marginBottom: 40}]}>
+        <View style={[styles.flex, { marginBottom: 40 }]}>
           <View style={styles.flex}>
             <MaterialIcons name='light-mode' color={!Value ? Colors.PRIMARY_COLOR : Colors.BLACK} size={20} />
-          <TextComponent text={'Light'} style={{color: !Value ? Colors.PRIMARY_COLOR : Colors.BLACK }} />
+            <TextComponent text={'Light'} style={{ color: !Value ? Colors.PRIMARY_COLOR : Colors.BLACK }} />
           </View>
 
           <Switch
@@ -132,9 +151,9 @@ const Settings = () => {
             renderInActiveText={false}
           />
 
-<View style={styles.flex}>
-            <MaterialIcons name='dark-mode' color={ Value ? Colors.PRIMARY_COLOR : Colors.BLACK} size={20} />
-          <TextComponent text={'Dark'} style={{color: Value ? Colors.PRIMARY_COLOR : Colors.BLACK}} />
+          <View style={styles.flex}>
+            <MaterialIcons name='dark-mode' color={Value ? Colors.PRIMARY_COLOR : Colors.BLACK} size={20} />
+            <TextComponent text={'Dark'} style={{ color: Value ? Colors.PRIMARY_COLOR : Colors.BLACK }} />
           </View>
 
         </View>
@@ -172,7 +191,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: Sizes.h5,
   },
-  textx:{
+  textx: {
     color: Colors.LLGREY,
     fontSize: Sizes.h6
   },

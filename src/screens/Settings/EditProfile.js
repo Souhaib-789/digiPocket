@@ -35,32 +35,32 @@ const EditProfile = () => {
         type: e?.mime,
       };
       setimage(imgObject);
-      uploadPhotoToStorage()
-    });
+      uploadPhotoToStorage(imgObject?.uri)
+    } ,'photo')
   };
 
-  const uploadPhotoToStorage = async () => {
-    let uploadUri = image ? image?.uri : null;
-    let filename = uploadUri?.substring(uploadUri.lastIndexOf('/') + 1);
+  const uploadPhotoToStorage = async (img) => {
+    
+    let filename = img?.substring(img.lastIndexOf('/') + 1);
 
     const extension = filename.split('.').pop();
     const name = filename.split('.').slice(0, -1).join('.');
     let filenamex = name + Date.now() + '.' + extension;
 
-    // const filenamex = Date.now() + '_' + user?.uid + '.jpg';
-
     const storageRef = storage().ref(`photos/${filenamex}`);
     try {
       dispatch(showLoading())
-      await storageRef.putFile(uploadUri);
+      await storageRef.putFile(img);
       const downloadUrl = await storageRef.getDownloadURL();
+      // console.log('---- URLLLLL -----------' , downloadUrl);
       handleUpdateProfileURL(downloadUrl)
     } catch (error) {
-      console.error('Error uploading photo: ', error);
+      // console.error('Error uploading photo: ', error);
       dispatch(hideLoading())
       return null;
     }
   };
+
 
   const handleUpdateProfileURL = async (url) => {
     try {

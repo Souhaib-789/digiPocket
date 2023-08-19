@@ -206,12 +206,7 @@ const AddGoal = (props) => {
           defaultButtonText={routeData?.category ? routeData?.category : "Select category"}
           buttonTextStyle={{ fontSize: Sizes.h5, color: theme ? Colors.WHITE : Colors.BLACK, fontFamily: Fonts.Regular }}
           search
-          renderDropdownIcon={() => (
-            <MaterialIcons
-              name="keyboard-arrow-down"
-              size={18}
-              color={theme ? Colors.WHITE : Colors.BLACK}
-            />
+          renderDropdownIcon={() => (  <MaterialIcons name="keyboard-arrow-down" size={18}   color={theme ? Colors.WHITE : Colors.BLACK}  />
           )}
           renderSearchInputLeftIcon={() => (
             <AntDesign name="search1" color={Colors.GREY} size={20} />
@@ -300,23 +295,11 @@ const AddGoal = (props) => {
               marginTop: 10,
               borderColor: Colors.RED,
               borderWidth: 1,
-              backgroundColor: Colors.WHITE,
+              backgroundColor: 'transparent' ,
             }}
             textStyle={{ color: Colors.RED }}
           />
-        ) : (
-          <Button
-            title={'Make it complete'}
-            onPress={() => setopenPopper(true)}
-            style={{
-              marginTop: 10,
-              borderColor: Colors.PRIMARY_COLOR,
-              borderWidth: 1,
-              backgroundColor: Colors.WHITE,
-            }}
-            textStyle={{ color: Colors.PRIMARY_COLOR }}
-          />
-        )}
+        ) : null}
 
       </ScrollView>
 

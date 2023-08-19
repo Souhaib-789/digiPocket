@@ -8,9 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { userExist, userInfo } from '../redux/actions/AuthActions';
 import { Snackbar } from 'react-native-paper';
 import { Colors } from '../config/Colors';
-import { hideAlert } from '../redux/actions/AppAction';
+import { hideAlert, setTheme } from '../redux/actions/AppAction';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Fonts } from '../config/Fonts';
 
 
 export default function Navigation() {
@@ -37,6 +36,7 @@ export default function Navigation() {
 
   const checkAuthentication = async () => {
     setTimeout(async () => {
+      checkTheme()
       let user_data = await AsyncStorage.getItem('@user')
       if (user_data != null) {
         dispatch(userExist(true))
@@ -47,6 +47,15 @@ export default function Navigation() {
         dispatch(userExist(false))
       }
     }, 1000);
+  }
+
+  const checkTheme = async () => {
+      let currtheme = await AsyncStorage.getItem('@theme')
+      if (JSON.parse(currtheme) != true) {
+        dispatch(setTheme(false))
+      } else {
+        dispatch(setTheme(true))
+      }
   }
 
     return (

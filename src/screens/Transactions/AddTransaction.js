@@ -27,7 +27,6 @@ const AddTransaction = props => {
   const routeData = props?.route?.params?.item;
   const Transtype = props?.route?.params?.type;
   const purpose = props?.route?.params?.purpose;
-
   const theme = useSelector(state => state.AppReducer.theme);
   const userID = useSelector(state => state.AuthReducer.userInfo.uid);
   const dispatch = useDispatch();
@@ -37,7 +36,7 @@ const AddTransaction = props => {
   const [amount, setamount] = useState(routeData?.amount);
   const [type, settype] = useState('Expense');
   const [category, setcategory] = useState(routeData?.category);
-  const [TransactionDate, setTransactionDate] = useState(routeData?.date);
+  const [TransactionDate, setTransactionDate] = useState(routeData?.transaction_date);
   const [description, setdescription] = useState(routeData?.description);
   const transactionid = Math.random().toString().substring(2, 8);
   const [date, setDate] = useState(new Date());
@@ -154,7 +153,7 @@ const AddTransaction = props => {
             id: routeData?.id,
             name: name,
             amount: amount,
-            date: TransactionDate,
+            transaction_date: TransactionDate,
             category: category ,
             description: description ,
           };
@@ -197,11 +196,10 @@ const AddTransaction = props => {
             id: routeData?.id,
             name: name,
             amount: amount,
-            date: TransactionDate,
+            transaction_date: TransactionDate,
             category: category ,
             description: description ,
           };
-  
           // Update the entire "incomes" array in Firestore
           await usersCollectionRef.doc(userID).update({
             income: incomeArray,
@@ -402,7 +400,7 @@ const AddTransaction = props => {
               marginTop: 10,
               borderColor: Colors.PRIMARY_COLOR,
               borderWidth: 1,
-              backgroundColor: Colors.WHITE,
+              backgroundColor: theme ? Colors.BLACK : Colors.WHITE,
             }}
             textStyle={{color: Colors.PRIMARY_COLOR}}
           />
@@ -414,7 +412,7 @@ const AddTransaction = props => {
         mode="date"
         open={openModal}
         date={date}
-        // theme='dark'
+        theme={theme ? 'dark' : 'light'}
         onConfirm={date => {
           setOpenModal(false);
           setTransactionDate(date);

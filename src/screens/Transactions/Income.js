@@ -23,7 +23,6 @@ const Income = () => {
   const [myincomes, setmyincomes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-
   useEffect(() => {
     getUserIncome();
   }, []);

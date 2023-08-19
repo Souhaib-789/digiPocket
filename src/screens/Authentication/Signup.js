@@ -64,7 +64,6 @@ const Signup = () => {
             .collection('Users')
             .doc(auth().currentUser.uid)
             .set({
-              userImg: null,
               expenses : [],
               income: [],
               goals:[]

@@ -73,10 +73,10 @@ const Goals = () => {
     return (
       <TouchableOpacity style={styles.list_item} onPress={()=> navigation.navigate('AddGoal' , {item: item })}>
         <View style={styles.flex}>
-          <Icon category={item?.category} color={Colors.BLACK} />
+          <Icon category={item?.category} color={theme? Colors.WHITE : Colors.BLACK} />
           <View style={{gap: 8 , width: '88%'}}>
             <View style={styles.flexA}>
-            <TextComponent text={scaledValue} style={[styles.list_text , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
+            <TextComponent text={item?.name} style={[styles.list_text , {color: theme ? Colors.WHITE : Colors.BLACK}]} />
             <TextComponent text={`Rs.${Intl.NumberFormat('en-US').format(item?.amount)}`} style={[styles.expense_text , {color : theme ? Colors.WHITE : Colors.BLACK  }]} />
             </View>
 

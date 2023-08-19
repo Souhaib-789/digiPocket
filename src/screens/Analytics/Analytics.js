@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, FlatList } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, View, ScrollView, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { Colors } from '../../config/Colors';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
 import TextComponent from '../../components/TextComponent';
@@ -17,13 +17,14 @@ const Analytics = () => {
   const dispatch = useDispatch();
 
   const [incomes, setincomes] = useState([]);
-  const [expenses, setexpenses] = useState([]);
-  const [CategoriesCount, setCategoriesCount] = useState({});
   const [PIE_DATA, setPIE_DATA] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
 
   useEffect(() => {
-    getAllData();
-  }, []);
+    getAllData()
+  }, [])
+
 
   const getAllData = async () => {
     const usersCollectionRef = firestore().collection('Users');
@@ -36,8 +37,27 @@ const Analytics = () => {
         const expenseArray = userData.expenses || [];
 
         setincomes(incomeArray);
-        setexpenses(expenseArray)
-        //  expenseCategoriesAnalysis()
+        if (expenseArray) {
+          // console.log('----- expenseArray -----', expenseArray);
+
+          const counts = categories.reduce((result, category) => {
+            const count = expenseArray.reduce((total, item) => {
+              if (item?.category === category?.name) {
+                return total + 1;
+              }
+              return total;
+            }, 0);
+
+            result[category?.name] = count;
+            return result;
+          }, {});
+
+          if (counts) {
+            calculatePieData(counts)
+          } else {
+            console.log('loading pie data');
+          }
+        }
       } else {
         console.log('User document not found');
         return [];
@@ -53,79 +73,91 @@ const Analytics = () => {
 
   const barData = [
     {
-      value: 40,
+      value: 1,
       label: 'Jan',
       spacing: 2,
       labelWidth: 30,
       labelTextStyle: { color: Colors.LLLGREY },
       frontColor: Colors.PRIMARY_COLOR,
-
     },
-    { value: 20, frontColor: Colors.LLGREY },
+    { value: 1, frontColor: Colors.LLGREY },
     {
-      value: 50,
+      value: 1,
       label: 'Feb',
       spacing: 2,
       labelWidth: 30,
       labelTextStyle: { color: Colors.LLLGREY },
       frontColor: Colors.PRIMARY_COLOR,
     },
-    { value: 40, frontColor: Colors.LLGREY },
+    { value: 1, frontColor: Colors.LLGREY },
     {
-      value: 75,
-      label: 'Mar',
+      value: 1,
+      label: 'March',
       spacing: 2,
       labelWidth: 30,
       labelTextStyle: { color: Colors.LLLGREY },
       frontColor: Colors.PRIMARY_COLOR,
     },
-    { value: 25, frontColor: Colors.LLGREY },
+    { value: 1, frontColor: Colors.LLGREY },
     {
-      value: 30,
+      value: 1,
       label: 'Apr',
       spacing: 2,
       labelWidth: 30,
       labelTextStyle: { color: Colors.LLLGREY },
       frontColor: Colors.PRIMARY_COLOR,
     },
-    { value: 20, frontColor: Colors.LLGREY },
+    { value: 1, frontColor: Colors.LLGREY },
     {
-      value: 60,
+      value: 1,
       label: 'May',
       spacing: 2,
       labelWidth: 30,
       labelTextStyle: { color: Colors.LLLGREY },
       frontColor: Colors.PRIMARY_COLOR,
     },
-    { value: 40, frontColor: Colors.LLGREY },
+    { value: 1, frontColor: Colors.LLGREY },
     {
-      value: 65,
+      value: 1,
       label: 'Jun',
       spacing: 2,
       labelWidth: 30,
       labelTextStyle: { color: Colors.LLLGREY },
       frontColor: Colors.PRIMARY_COLOR,
     },
-    { value: 30, frontColor: Colors.LLGREY },
+    { value: 1, frontColor: Colors.LLGREY },
+
+    {
+      value: 1,
+      label: 'Jul',
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: Colors.LLLGREY },
+      frontColor: Colors.PRIMARY_COLOR,
+    },
+    { value: 1, frontColor: Colors.LLGREY },
+
+    {
+      value: 35,
+      label: 'Aug',
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: Colors.LLLGREY },
+      frontColor: Colors.PRIMARY_COLOR,
+    },
+    { value: 15, frontColor: Colors.LLGREY },
+
+    {
+      value: 1,
+      label: 'Sep',
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: Colors.LLLGREY },
+      frontColor: Colors.PRIMARY_COLOR,
+    },
+    { value: 1, frontColor: Colors.LLGREY },
+    
   ];
-
-  // const expenseCategoriesAnalysis = async () => {
-
-  //   const counts = categories.reduce((result, category) => {
-  //     const count = expenses.reduce((total, item) => {
-  //       if (item?.category === category?.name) {
-  //         return total + 1;
-  //       }
-  //       return total;
-  //     }, 0);
-
-  //     result[category?.name] = count;
-  //     return result;
-  //   }, {});
-  //   setCategoriesCount(counts)
-  //     calculatePieData()
-
-  // }
 
   const categories = [
     {
@@ -180,16 +212,22 @@ const Analytics = () => {
     },
   ];
 
-  // const calculatePieData = () => {
-  //   const totalSum = categories.reduce((sum, category) => sum + CategoriesCount[category?.name], 0);
+  const calculatePieData = (Counts) => {
+    try {
+      const totalSum = categories.reduce((sum, category) => sum + Counts[category?.name], 0);
 
-  //   let pieData = categories.map(category => ({
-  //     value: CategoriesCount[category?.name] ,
-  //     color: category?.color,
-  //     text: `${((CategoriesCount[category?.name] / totalSum) * 100).toFixed(1)}%`
-  //   }))
-  //   setPIE_DATA(pieData)
-  // }
+      let pieDataArray = categories.map(category => ({
+        value: Counts[category?.name],
+        color: category?.color,
+        text: `${((Counts[category?.name] / totalSum) * 100).toFixed(1)}%`
+      }))
+      setPIE_DATA(pieDataArray)
+      // console.log('----- pieData -----' , pieDataArray);
+    } catch (err) {
+      console.log(err);
+      dispatch(showAlert('Poor internet connection !'))
+    }
+  }
 
   const renderCategoryItem = ({ item }) => {
     return (
@@ -200,11 +238,18 @@ const Analytics = () => {
     );
   };
 
+
+
+
   return (
     <View style={[styles.container, { backgroundColor: theme ? Colors.BLACK : Colors.WHITE }]}>
       <TextComponent text={'Analytics'} style={styles.heading} />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} refreshControl={  <RefreshControl
+            refreshing={refreshing}
+            onRefresh={getAllData}
+            colors={[Colors.PRIMARY_COLOR, Colors.BLACK]}
+          /> }>
         <TextComponent text={'Overview'} style={[styles.sub_heading, { color: theme ? Colors.WHITE : Colors.BLACK }]} />
         <BarChart
           barWidth={10}
@@ -242,24 +287,30 @@ const Analytics = () => {
           numColumns={3}
         />
 
-        <View style={{ alignSelf: 'center' }}>
-          <PieChart
-            donut
-            innerRadius={50}
-            data={PIE_DATA}
-            style={styles.pie_chart}
-            showText
-            textColor={Colors.WHITE}
-            focusOnPress={true}
-            onLabelPress={(item, index) => console.log(item)}
-            textSize={13}
-            strokeColor="transparent"
-            strokeWidth={70}
-            shiftInnerCenterX={5}
-            innerCircleColor={theme ? Colors.BLACK : Colors.WHITE}
-            shiftInnerCenterY={8}
-          />
-        </View>
+
+        {
+          PIE_DATA ?
+
+            <View style={{ alignSelf: 'center' }}>
+              <PieChart
+                donut
+                innerRadius={50}
+                data={PIE_DATA}
+                style={styles.pie_chart}
+                showText
+                textColor={Colors.WHITE}
+                focusOnPress={true}
+                onLabelPress={(item, index) => console.log(item)}
+                textSize={13}
+                strokeColor="transparent"
+                strokeWidth={70}
+                shiftInnerCenterX={5}
+                innerCircleColor={theme ? Colors.BLACK : Colors.WHITE}
+                shiftInnerCenterY={8}
+              />
+            </View> : <ActivityIndicator color={Colors.PRIMARY_COLOR} size={20} />
+        }
+
       </ScrollView>
     </View>
   );

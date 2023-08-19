@@ -42,6 +42,7 @@ const ImageUploader = (callback, mediaType = 'any', multiple = false,) => {
                             multiple: multiple,
                             width: 200,
                             height: 200,
+                            cropping: true
                         });
                         if (image || image.length > 0) {
                             callback(image);

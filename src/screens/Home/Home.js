@@ -116,7 +116,7 @@ const Home = () => {
             </View>
             <TouchableOpacity
               onPress={() => navigation.navigate('EditProfile')}>
-              <Image source={userProfile ? {uri : userProfile }: Alternate}  style={styles.profile_image}  resizeMode="contain"  />
+              <Image source={userProfile ? {uri : userProfile }: Alternate}  style={styles.profile_image}   />
             </TouchableOpacity>
           </View>
 
